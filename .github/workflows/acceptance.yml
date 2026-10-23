@@ -22,5 +22,5 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run typecheck && npm test
       - run: npm run build && npm run build:plugin
-      - run: npx --no-install playwright install chromium
+      - run: google-chrome --version
       - run: npm run test:browser

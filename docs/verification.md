@@ -27,3 +27,17 @@ No deployment, external model call, artifact upload or paid larger runner is use
 not proof of a passing browser run. Record the exact run URL and commit after GitHub
 reports a terminal result. This standalone browser test is still not a live DSH
 installation test.
+
+The first browser run (39986031646) failed before page navigation because the
+Playwright-downloaded headless shell could not establish its sandbox on Ubuntu
+24.04. No security settings were changed. The workflow now selects the runner's
+preinstalled Google Chrome stable through Playwright's documented `chrome` channel,
+with `chromiumSandbox: true`, and prints its actual version. GitHub's standard
+Ubuntu image lists Chrome; Chromium documents Ubuntu's existing profile for
+Chrome stable's default installation. This uses that installed browser normally,
+not a copied binary, custom profile, sysctl change or disabled sandbox. Its outcome
+still requires a successful exact-commit run.
+
+Sources: [GitHub runner image](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md),
+[Playwright channels](https://playwright.dev/docs/browsers#google-chrome--microsoft-edge),
+[Chromium AppArmor explanation](https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md).
