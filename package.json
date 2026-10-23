@@ -10,16 +10,17 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "dev": "vite --host 127.0.0.1",
-    "build:plugin": "vite build --config vite.plugin.config.ts"
+    "build:plugin": "vite build --config vite.plugin.config.ts",
+    "test:browser": "playwright test"
   },
   "dependencies": {
+    "@a2ui/markdown-it": "0.2.2",
     "@a2ui/react": "0.14.0",
     "@a2ui/web_core": "0.14.0",
     "ajv": "8.17.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "zod": "3.25.76",
-    "@a2ui/markdown-it": "0.2.2"
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.5",
@@ -30,8 +31,10 @@
     "@deepseek-ai/dsh-client-ui-session": "0.2.0-rc.2",
     "@deepseek-ai/dsh-client-ui-slots": "0.2.0-rc.2",
     "@deepseek-ai/dsh-tools": "0.2.0-rc.2",
+    "@playwright/test": "1.56.1",
     "@testing-library/dom": "10.4.0",
     "@testing-library/react": "16.3.0",
+    "@types/node": "24.10.0",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "jsdom": "26.1.0",

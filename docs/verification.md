@@ -12,3 +12,18 @@ Outstanding before production readiness: real Chrome visual/input test; isolated
 Commands: `npm test`, `npm run typecheck`, `npm run build`, `npm run build:plugin`.
 
 Use exact source commit and observed results from a release's notes; do not treat this checklist as proof those commands passed on a later revision.
+
+## Real-browser acceptance workflow
+
+The repository workflow uses standard GitHub-hosted Ubuntu 24.04, read-only
+contents permissions, no persisted checkout credentials and no secrets. Official
+checkout/setup-node actions are pinned to commit SHAs. Playwright 1.56.1 is locked;
+Chromium runs with its sandbox enabled. The test blocks requests outside loopback,
+streams synthetic data, edits a real input, clicks an action, exports the recording,
+reloads the page, restores it and checks that historical actions were not resent.
+No deployment, external model call, artifact upload or paid larger runner is used.
+
+`npx playwright test --list` only verifies test discovery. A committed workflow is
+not proof of a passing browser run. Record the exact run URL and commit after GitHub
+reports a terminal result. This standalone browser test is still not a live DSH
+installation test.

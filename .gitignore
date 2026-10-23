@@ -4,3 +4,6 @@ lib/
 *.tgz
 coverage/
 .env*
+
+test-results
+playwright-report

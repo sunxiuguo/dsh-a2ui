@@ -1,1 +1,28 @@
-{"compilerOptions":{"target":"ES2022","module":"ESNext","moduleResolution":"Bundler","lib":["ES2022","DOM","DOM.Iterable"],"jsx":"react-jsx","strict":true,"skipLibCheck":true,"resolveJsonModule":true,"esModuleInterop":true,"noEmit":true},"include":["src","demo","test"]}
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noEmit": true
+  },
+  "include": [
+    "src",
+    "demo",
+    "test",
+    "browser-tests",
+    "playwright.config.ts",
+    "vite.config.ts",
+    "vite.plugin.config.ts",
+    "scripts/license-audit.ts"
+  ]
+}
