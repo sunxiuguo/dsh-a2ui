@@ -11,7 +11,7 @@ import {SurfaceSession,SurfaceView} from '../surface';
 import type {Message} from '../protocol';
 export const inject=['uiConversation','slots','sessions'];
 interface Injected {send:(action:Message)=>Promise<void>}
-function ClientSurface({node,send}:ChatNodeViewProps<'a2ui-document'>&Injected){
+function ClientSurface({node,send}:Pick<ChatNodeViewProps<'a2ui-document'>,'node'>&Injected){
  const data=node.data;
  const [error,setError]=useState('');
  const onAction=useCallback(async(action:Message)=>{try{await send(action);setError('');}catch{setError('Action was not confirmed by DSH. It has not been retried.');throw new Error('Action delivery failed');}},[send]);
