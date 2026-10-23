@@ -1,0 +1,499 @@
+[
+  {
+    "name": "@a2ui/markdown-it",
+    "version": "0.2.2",
+    "license": "Apache-2.0",
+    "repository": {
+      "directory": "typescript/renderers/markdown-it",
+      "type": "git",
+      "url": "git+https://github.com/a2ui-project/a2ui.git"
+    },
+    "source": "https://registry.npmjs.org/@a2ui/markdown-it",
+    "files": {
+      "LICENSE": "8c8b5b632d56c4c1658296963c693db5396772a33caaddb9a22593c4155c437a"
+    },
+    "directory": "_a2ui_markdown-it_0.2.2"
+  },
+  {
+    "name": "@a2ui/react",
+    "version": "0.14.0",
+    "license": "Apache-2.0",
+    "repository": {
+      "directory": "typescript/renderers/react",
+      "type": "git",
+      "url": "git+https://github.com/a2ui-project/a2ui.git"
+    },
+    "source": "https://registry.npmjs.org/@a2ui/react",
+    "files": {
+      "LICENSE": "8c8b5b632d56c4c1658296963c693db5396772a33caaddb9a22593c4155c437a"
+    },
+    "directory": "_a2ui_react_0.14.0"
+  },
+  {
+    "name": "@a2ui/web_core",
+    "version": "0.14.0",
+    "license": "Apache-2.0",
+    "repository": {
+      "directory": "typescript/core/web_core",
+      "type": "git",
+      "url": "git+https://github.com/a2ui-project/a2ui.git"
+    },
+    "source": "https://registry.npmjs.org/@a2ui/web_core",
+    "files": {
+      "LICENSE": "8c8b5b632d56c4c1658296963c693db5396772a33caaddb9a22593c4155c437a"
+    },
+    "directory": "_a2ui_web_core_0.14.0"
+  },
+  {
+    "name": "@lit-labs/ssr-dom-shim",
+    "version": "1.6.0",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/labs/ssr-dom-shim"
+    },
+    "source": "https://registry.npmjs.org/@lit-labs/ssr-dom-shim",
+    "files": {
+      "LICENSE": "f7c41929cb9f910d7dd95dac0bcf1c4f5eb9b3d415cc4cf776cf070b81f47e0d"
+    },
+    "directory": "_lit-labs_ssr-dom-shim_1.6.0",
+    "licenseSource": "https://github.com/lit/lit/blob/main/LICENSE",
+    "licenseGitBlob": "428e3385849054f8e0657b86d7ede515ea6e8c33",
+    "reason": "Published ssr-dom-shim package omits the full BSD license; official monorepo license retained."
+  },
+  {
+    "name": "@lit/context",
+    "version": "1.1.6",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/context"
+    },
+    "source": "https://registry.npmjs.org/@lit/context",
+    "files": {
+      "LICENSE": "2503b5766520d283dd6cc9c9852bdfc59ffe16b0538d554db4e5b9b725269604"
+    },
+    "directory": "_lit_context_1.1.6"
+  },
+  {
+    "name": "@lit/reactive-element",
+    "version": "2.1.2",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/reactive-element"
+    },
+    "source": "https://registry.npmjs.org/@lit/reactive-element",
+    "files": {
+      "LICENSE": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"
+    },
+    "directory": "_lit_reactive-element_2.1.2"
+  },
+  {
+    "name": "@preact/signals-core",
+    "version": "1.14.4",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/preactjs/signals"
+    },
+    "source": "https://registry.npmjs.org/@preact/signals-core",
+    "files": {
+      "LICENSE": "a11fc89e4c6b118854c7a667734a0b2e6bf2af5e45c6686de31adbccc8f3ae8d"
+    },
+    "directory": "_preact_signals-core_1.14.4"
+  },
+  {
+    "name": "@types/trusted-types",
+    "version": "2.0.7",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "directory": "types/trusted-types"
+    },
+    "source": "https://registry.npmjs.org/@types/trusted-types",
+    "files": {
+      "LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "directory": "_types_trusted-types_2.0.7"
+  },
+  {
+    "name": "ajv",
+    "version": "8.17.1",
+    "license": "MIT",
+    "repository": "ajv-validator/ajv",
+    "source": "https://registry.npmjs.org/ajv",
+    "files": {
+      "LICENSE": "a05350a88e318e4f5f2c2a1ff1e2e88daa4dd38e6e78b71cccae422bdc762cc3"
+    },
+    "directory": "ajv_8.17.1"
+  },
+  {
+    "name": "argparse",
+    "version": "2.0.1",
+    "license": "Python-2.0",
+    "repository": "nodeca/argparse",
+    "source": "https://registry.npmjs.org/argparse",
+    "files": {
+      "LICENSE": "de4d1f2d2ad5ad0cfd1657a106476b31cb5db5ef9d1ff842b237c0c81f0c8a23"
+    },
+    "directory": "argparse_2.0.1"
+  },
+  {
+    "name": "clsx",
+    "version": "2.1.1",
+    "license": "MIT",
+    "repository": "lukeed/clsx",
+    "source": "https://registry.npmjs.org/clsx",
+    "files": {
+      "license": "9a9edad7baae52622bddf3c15b2ef8a33d2c89f2d25408ad13e8a7481c6b0c97"
+    },
+    "directory": "clsx_2.1.1"
+  },
+  {
+    "name": "dompurify",
+    "version": "3.4.11",
+    "license": "(MPL-2.0 OR Apache-2.0)",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/cure53/DOMPurify.git"
+    },
+    "source": "https://registry.npmjs.org/dompurify",
+    "files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "LICENSE-MPL": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+    },
+    "directory": "dompurify_3.4.11"
+  },
+  {
+    "name": "entities",
+    "version": "4.5.0",
+    "license": "BSD-2-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/fb55/entities.git"
+    },
+    "source": "https://registry.npmjs.org/entities",
+    "files": {
+      "LICENSE": "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164"
+    },
+    "directory": "entities_4.5.0"
+  },
+  {
+    "name": "fast-deep-equal",
+    "version": "3.1.3",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/epoberezkin/fast-deep-equal.git"
+    },
+    "source": "https://registry.npmjs.org/fast-deep-equal",
+    "files": {
+      "LICENSE": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+    },
+    "directory": "fast-deep-equal_3.1.3"
+  },
+  {
+    "name": "fast-uri",
+    "version": "3.1.9",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/fastify/fast-uri.git"
+    },
+    "source": "https://registry.npmjs.org/fast-uri",
+    "files": {
+      "LICENSE": "b010b0dfdfdb23d7396e03b82cd4621fc9bb8f95d6b0aea70b9c24e12074c786"
+    },
+    "directory": "fast-uri_3.1.9"
+  },
+  {
+    "name": "js-tokens",
+    "version": "4.0.0",
+    "license": "MIT",
+    "repository": "lydell/js-tokens",
+    "source": "https://registry.npmjs.org/js-tokens",
+    "files": {
+      "LICENSE": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1"
+    },
+    "directory": "js-tokens_4.0.0"
+  },
+  {
+    "name": "jsesc",
+    "version": "3.1.0",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/mathiasbynens/jsesc.git"
+    },
+    "source": "https://registry.npmjs.org/jsesc",
+    "files": {
+      "LICENSE-MIT.txt": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a"
+    },
+    "directory": "jsesc_3.1.0"
+  },
+  {
+    "name": "json-schema-traverse",
+    "version": "1.0.0",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/epoberezkin/json-schema-traverse.git"
+    },
+    "source": "https://registry.npmjs.org/json-schema-traverse",
+    "files": {
+      "LICENSE": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+    },
+    "directory": "json-schema-traverse_1.0.0"
+  },
+  {
+    "name": "linkify-it",
+    "version": "5.0.2",
+    "license": "MIT",
+    "repository": "markdown-it/linkify-it",
+    "source": "https://registry.npmjs.org/linkify-it",
+    "files": {
+      "LICENSE": "95e3f7f0e81e9b4940cdfaa1956aaff5e4dfd2fb1565041e7c78eb9a606f23e3"
+    },
+    "directory": "linkify-it_5.0.2"
+  },
+  {
+    "name": "lit",
+    "version": "3.3.3",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/lit"
+    },
+    "source": "https://registry.npmjs.org/lit",
+    "files": {
+      "LICENSE": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"
+    },
+    "directory": "lit_3.3.3"
+  },
+  {
+    "name": "lit-element",
+    "version": "4.2.2",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/lit-element"
+    },
+    "source": "https://registry.npmjs.org/lit-element",
+    "files": {
+      "LICENSE": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"
+    },
+    "directory": "lit-element_4.2.2"
+  },
+  {
+    "name": "lit-html",
+    "version": "3.3.3",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lit/lit.git",
+      "directory": "packages/lit-html"
+    },
+    "source": "https://registry.npmjs.org/lit-html",
+    "files": {
+      "LICENSE": "2b66f9390afde29edfe4314daff93f01fb182e1178053e228120178987e5db75"
+    },
+    "directory": "lit-html_3.3.3"
+  },
+  {
+    "name": "loose-envify",
+    "version": "1.4.0",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/zertosh/loose-envify.git"
+    },
+    "source": "https://registry.npmjs.org/loose-envify",
+    "files": {
+      "LICENSE": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893"
+    },
+    "directory": "loose-envify_1.4.0"
+  },
+  {
+    "name": "markdown-it",
+    "version": "14.3.3",
+    "license": "MIT",
+    "repository": "markdown-it/markdown-it",
+    "source": "https://registry.npmjs.org/markdown-it",
+    "files": {
+      "LICENSE": "792c48c5a849a15fdf9e37e8bcf9e6d1dd13b32b46c642a748a0a46a9919d473"
+    },
+    "directory": "markdown-it_14.3.3"
+  },
+  {
+    "name": "mdurl",
+    "version": "2.1.0",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/markdown-it/mdurl.git"
+    },
+    "source": "https://registry.npmjs.org/mdurl",
+    "files": {
+      "LICENSE": "6b6a356c4337e2446841f30f3cdf7e7023af8c5260b5e347c0f987b9f6aa2644"
+    },
+    "directory": "mdurl_2.1.0"
+  },
+  {
+    "name": "punycode.js",
+    "version": "2.3.1",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/mathiasbynens/punycode.js.git"
+    },
+    "source": "https://registry.npmjs.org/punycode.js",
+    "files": {
+      "LICENSE-MIT.txt": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a"
+    },
+    "directory": "punycode.js_2.3.1"
+  },
+  {
+    "name": "react",
+    "version": "18.3.1",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/facebook/react.git",
+      "directory": "packages/react"
+    },
+    "source": "https://registry.npmjs.org/react",
+    "files": {
+      "LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "directory": "react_18.3.1"
+  },
+  {
+    "name": "react-dom",
+    "version": "18.3.1",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/facebook/react.git",
+      "directory": "packages/react-dom"
+    },
+    "source": "https://registry.npmjs.org/react-dom",
+    "files": {
+      "LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "directory": "react-dom_18.3.1"
+  },
+  {
+    "name": "redos-detector",
+    "version": "6.1.4",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/tjenkinson/redos-detector.git"
+    },
+    "source": "https://registry.npmjs.org/redos-detector",
+    "files": {
+      "LICENSE": "26cdf2329b82081dcbe72b4c72fbfe6ba0c785ad1762af29afb9c6249b8a4416"
+    },
+    "directory": "redos-detector_6.1.4"
+  },
+  {
+    "name": "regjsparser",
+    "version": "0.13.0",
+    "license": "BSD-2-Clause",
+    "repository": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/jviereck/regjsparser.git"
+    },
+    "source": "https://registry.npmjs.org/regjsparser",
+    "files": {
+      "LICENSE.BSD": "2d65cdba6e67bd7fa9c59070eb3ef5b65490cf1644560eb30c931a1d364009c2"
+    },
+    "directory": "regjsparser_0.13.0"
+  },
+  {
+    "name": "require-from-string",
+    "version": "2.0.2",
+    "license": "MIT",
+    "repository": "floatdrop/require-from-string",
+    "source": "https://registry.npmjs.org/require-from-string",
+    "files": {
+      "license": "6ee0feb1f6ef996ff5a68600f8cf98909cf412d39ef3cdceaefd87d636fa1b7f"
+    },
+    "directory": "require-from-string_2.0.2"
+  },
+  {
+    "name": "scheduler",
+    "version": "0.23.2",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/facebook/react.git",
+      "directory": "packages/scheduler"
+    },
+    "source": "https://registry.npmjs.org/scheduler",
+    "files": {
+      "LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "directory": "scheduler_0.23.2"
+  },
+  {
+    "name": "uc.micro",
+    "version": "2.1.0",
+    "license": "MIT",
+    "repository": "markdown-it/uc.micro",
+    "source": "https://registry.npmjs.org/uc.micro",
+    "files": {
+      "LICENSE.txt": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a"
+    },
+    "directory": "uc.micro_2.1.0"
+  },
+  {
+    "name": "validate-color",
+    "version": "2.2.4",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/dreamyguy/validate-color"
+    },
+    "source": "https://registry.npmjs.org/validate-color",
+    "files": {
+      "LICENSE": "7306d2fb8d7c571ae75082fa8db3c167930be903f87dfa49274621c804c4dea2"
+    },
+    "directory": "validate-color_2.2.4"
+  },
+  {
+    "name": "zod",
+    "version": "3.25.76",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/colinhacks/zod.git"
+    },
+    "source": "https://registry.npmjs.org/zod",
+    "files": {
+      "LICENSE": "3f1189b28e3866e0d979968d466b78f813f76827cfdca1fbb124cc0a5c8841f8"
+    },
+    "directory": "zod_3.25.76"
+  },
+  {
+    "name": "zod-to-json-schema",
+    "version": "3.25.2",
+    "license": "ISC",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/StefanTerdell/zod-to-json-schema"
+    },
+    "source": "https://registry.npmjs.org/zod-to-json-schema",
+    "files": {
+      "LICENSE": "80d3168ad2f70f6f5bb2ab22b23414707abf6f0a392034891481ae36a1a429d4"
+    },
+    "directory": "zod-to-json-schema_3.25.2"
+  }
+]
