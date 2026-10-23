@@ -41,6 +41,8 @@ The resulting package contains the server entry, client entry and `cordis.patch.
 
 The main model calls `render_a2ui` with `{ "messages": [...] }`. Use `demo/fixture.ts` as a synthetic contract example. In hosts without the browser plugin, the text receipt states only that validation succeeded, not that a UI was displayed. Code Mode rendering is not certified.
 
+A separate [packed server-service acceptance](docs/packed-host-acceptance.md) now verifies loading the actual package through Cordis and the DSH tool execution pipeline, including rejected calls and unload/remount. This is narrower than complete DSH host installation and does not certify the client or model loop.
+
 ## Current limits, not the final product boundary
 
 This alpha permits only the official basic catalog and bounds documents to 256 KiB, 512 messages, 8 active surfaces and 256 components per surface. It disables external media components and navigation, including external links/media in Markdown, as an initial deployment policy. That policy is narrower than A2UI itself. Actions are limited before sending to 16 KiB each, 128 attempts per session, and a 256 KiB retained/in-flight budget. Streaming DSH previews cannot send actions before final tool validation; failed/cancelled results withdraw the preview. Recordings bound history, snapshots and actions separately and never resend historical actions.
