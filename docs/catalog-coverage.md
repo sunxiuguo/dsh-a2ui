@@ -53,3 +53,15 @@ The full DSH launcher 0.2.0-rc.2 brings the base, Web and other profile packages
 the SDK dependencies already present here are not a complete installation. No live
 DSH-host acceptance is claimed. Full catalog variants, reactive subscriptions,
 locale combinations, accessibility and host failure/cancellation remain open.
+
+## Navigation and visible-selection increment
+
+The pending navigation browser scenario exercises a synthetic Tabs → Modal →
+TextField → action workflow: edit, close without sending, reopen, send once,
+switch tabs to unmount/remount the modal, export, reload and replay without
+resending. Bound form data is expected to survive; transient active-tab and modal
+open state intentionally restart at their default state. This is not a claim of
+keyboard/focus accessibility or Escape-key support. The control scenario also
+asserts the restored ChoicePicker's visible radio selection, not only stored data.
+These additional assertions require their own successful exact-commit browser CI;
+test discovery alone is not acceptance.

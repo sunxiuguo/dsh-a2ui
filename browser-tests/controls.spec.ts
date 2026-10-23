@@ -33,6 +33,8 @@ test('checkbox, slider, date and choice edits survive portable replay without ac
  await page.getByRole('button',{name:'Restore recording',exact:true}).click();
  await expect(page.getByRole('checkbox',{name:'Synthetic consent'})).toBeChecked();
  await expect(page.getByRole('slider')).toHaveValue('4');await expect(page.locator('input[type=date]')).toHaveValue('2026-10-24');
+ await expect(page.getByRole('radio',{name:'Two',exact:true})).toBeChecked();
+ await expect(page.getByRole('radio',{name:'One',exact:true})).not.toBeChecked();
  await expect(page.locator('pre')).toHaveText('No actions sent.');
  await page.getByRole('button',{name:'Export recording'}).click();
  expect(JSON.parse(await page.getByRole('textbox',{name:'Portable recording',exact:true}).inputValue()).snapshots[0].updateDataModel.value.choice).toEqual(['two']);
