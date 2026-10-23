@@ -37,7 +37,7 @@ npm run build:plugin
 npm pack --ignore-scripts
 ```
 
-The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Live DSH installation and browser acceptance are not yet verified.**
+The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Live DSH installation is not yet verified.** The standalone synthetic browser roundtrip passed in sandboxed Google Chrome 155.0.8059.39 on [this exact-commit CI run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/39986572817); this is not host acceptance.
 
 The main model calls `render_a2ui` with `{ "messages": [...] }`. Use `demo/fixture.ts` as a synthetic contract example. In hosts without the browser plugin, the text receipt states only that validation succeeded, not that a UI was displayed. Code Mode rendering is not certified.
 
@@ -67,7 +67,7 @@ A feature moves to supported only when its end-to-end test and limitations are d
 
 Tests use synthetic data. jsdom component tests have a no-layout constructable-stylesheet shim; they are not Chrome, visual or live-DSH tests. Read [verification](docs/verification.md) for actual commands and outstanding checks.
 
-Dependencies are exact at the top level and transitively locked by `package-lock.json`. Installation above disables lifecycle scripts. No CI workflow or deployment account is required or provisioned.
+Dependencies are exact at the top level and transitively locked by `package-lock.json`. Installation above disables lifecycle scripts. The included minimal CI workflow uses a standard GitHub-hosted runner with read-only contents permission; it does not deploy or use secrets. No deployment account is required.
 
 ## License
 

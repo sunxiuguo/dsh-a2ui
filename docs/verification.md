@@ -7,7 +7,7 @@ Environment: isolated cloud workspace, Node 24.19.0. Synthetic data only.
 - Browser-like component tests use jsdom 26.1.0. Constructable stylesheet `replaceSync` is shimmed because jsdom lacks layout support. These tests do not certify styling, browser security boundaries or a live DSH host.
 - Vite builds produce standalone preview and plugin entries. A successful bundle is not an installation result.
 
-Outstanding before production readiness: real Chrome visual/input test; isolated DSH installation and full interaction/reload test; host permission and Code Mode behavior; complete stable-catalog and function conformance; independent security review.
+Outstanding before production readiness: full visual/accessibility and catalog interaction coverage; isolated DSH installation and full interaction/reload test; host permission and Code Mode behavior; complete stable-catalog and function conformance; independent security review.
 
 Commands: `npm test`, `npm run typecheck`, `npm run build`, `npm run build:plugin`.
 
@@ -41,3 +41,14 @@ still requires a successful exact-commit run.
 Sources: [GitHub runner image](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md),
 [Playwright channels](https://playwright.dev/docs/browsers#google-chrome--microsoft-edge),
 [Chromium AppArmor explanation](https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md).
+
+## Observed browser result
+
+On 2026-10-23 at 16:25:35 UTC, [run 39986572817](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/39986572817)
+completed successfully at commit `727e1816e5c0f0cab88c4797b930b07c2f4d6019`.
+The log records Google Chrome 155.0.8059.39 and one passing real-browser test:
+stream → edit input → click action → export → full-page reload → restore edited
+value without resending historical actions. The 94 synthetic contract/unit tests,
+typecheck and both builds also passed. Chrome ran with sandbox enabled.
+This is a standalone demo result, not live DSH host acceptance, full catalog
+interaction coverage, a visual audit, adoption or production-readiness proof.
