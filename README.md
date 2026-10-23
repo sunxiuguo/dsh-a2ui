@@ -2,7 +2,7 @@
 
 An independent, protocol-first A2UI integration for DeepSeek Harness.
 
-**Status: 0.1.0-alpha.2, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
+**Status: 0.1.0-alpha.3, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
 
 ## What you can run today
 
@@ -38,11 +38,11 @@ npm run test:packed
 npm pack --ignore-scripts
 ```
 
-The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Live DSH installation is not yet verified.** The standalone synthetic browser roundtrip passed in sandboxed Google Chrome 155.0.8059.39 on [this exact-commit CI run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/39986572817); this is not host acceptance.
+The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Live DSH installation is not yet verified.** The standalone synthetic browser roundtrip passed in sandboxed Google Chrome 155.0.8059.39 on [this exact-commit CI run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40027979260); this is not host acceptance.
 
 The main model calls `render_a2ui` with `{ "messages": [...] }`. Use `demo/fixture.ts` as a synthetic contract example. In hosts without the browser plugin, the text receipt states only that validation succeeded, not that a UI was displayed. Code Mode rendering is not certified.
 
-The [packed acceptance chain](docs/packed-host-acceptance.md) verifies the real server pipeline, profile bundle auto-activation, host client discovery and official lazy client-module loading. Alpha.2 fixes alpha.1’s incompatible bare-ESM client artifact: DSH requires a classic script registering a lazy CJS factory. CI now tests the packed artifact, not only source components. Profile placement is synthetic; the user CLI/package-manager install, live conversation UI and model loop are not certified.
+The [packed acceptance chain](docs/packed-host-acceptance.md) verifies the real server pipeline, profile bundle auto-activation, host client discovery and official lazy client-module loading. Alpha.2 fixes alpha.1’s incompatible bare-ESM client artifact: DSH requires a classic script registering a lazy CJS factory. CI now tests the packed artifact, not only source components. Alpha.3 fixes the actual chat slot contract (`node.data`, not top-level `data`). A packed UI fixture now exercises the official renderer, session scopes, conversation assembler and send controller: two rendered sessions route to their own synthetic transport, and a rejected send is not retried. Profile placement, root/target projection and remote transport are synthetic; the user CLI/package-manager install, complete DSH shell and live model loop are not certified.
 
 ## Current limits, not the final product boundary
 
