@@ -1,6 +1,6 @@
 {
   "name": "dsh-a2ui",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "private": true,
   "type": "module",
   "description": "A strict, replayable A2UI protocol bridge for DeepSeek Harness.",
@@ -10,8 +10,9 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "dev": "vite --host 127.0.0.1",
-    "build:plugin": "vite build --config vite.plugin.config.ts",
-    "test:browser": "playwright test"
+    "build:plugin": "vite build --config vite.plugin.config.ts && vite build --config vite.client.config.ts",
+    "test:browser": "playwright test",
+    "test:packed": "node scripts/verify-packed.mjs"
   },
   "dependencies": {
     "@a2ui/markdown-it": "0.2.2",
@@ -40,7 +41,9 @@
     "jsdom": "26.1.0",
     "typescript": "5.9.3",
     "vite": "6.1.0",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "@deepseek-ai/dsh-app-boot": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-modules": "0.2.0-rc.2"
   },
   "main": "./lib/index.js",
   "exports": {

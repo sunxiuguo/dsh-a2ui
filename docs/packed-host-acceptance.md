@@ -1,34 +1,53 @@
-# Packed server-service acceptance
+# Packed profile and client-module acceptance
 
-This checks the npm-packed server entry against real Cordis 4.0.5 and DSH
-SystemPrompt / ToolRuntime 0.2.0-rc.2 services. It replaces the synthetic registry
-boundary for this check, not the full DSH application boundary.
-
-After installing the locked dependencies, run from the repository root:
+Run after `npm ci --ignore-scripts`:
 
 ```sh
 npm run build:plugin
-tmp=$(mktemp -d "$PWD/.host-acceptance.XXXXXX")
-npm pack --ignore-scripts --pack-destination "$tmp"
-tar -xzf "$tmp/dsh-a2ui-0.1.0-alpha.1.tgz" -C "$tmp"
-node scripts/verify-packed-host.mjs "$tmp/package"
+npm run test:packed
 ```
 
-Keep the extracted package under the repository so its peer dependencies resolve
-from the existing locked `node_modules`; no separate installation is needed.
-The temporary directory is disposable synthetic build output.
+The command packs the actual npm artifact, extracts it under a unique temporary
+repository directory so locked peers resolve, and runs both service and profile
+checks. It removes its own temporary output in `finally`. It requires Node 24.19.0,
+`npm` and `tar`, as provided by the Linux CI job. It neither installs a user profile
+nor modifies the real Harness home. No credentials, model, network calls or
+production data are used. A synthetic `.invalid` URL is an in-memory Request key,
+not an outgoing request.
 
-The script imports the package's actual built entry, mounts it via Cordis,
-dispatches through the official runtime, and asserts frozen successful metadata,
-the honest text fallback, rejected invalid and pre-dispatch cancelled calls, removal on plugin
-unload, and successful remount. It disposes the root fiber in `finally`.
-It uses only synthetic text and does not connect a model, browser, account,
-credentials, network service or production profile. It does not disable host
-policy or substitute a tool registry. The direct caller is agent-less.
+## Regression fixed in alpha.2
 
-Observed on 2026-10-23 against source commit
-`ce5c45d6dc134a15fe7756fe2e0e66bd96bf5ca5`, Node 24.19.0: all assertions passed.
-This establishes the packed server/service lifecycle and result contract. It does
-**not** establish profile bundle installation, client injection, streaming in a
-live DSH UI, click-to-model turns, durable sessions or full host cancellation.
-Those remain required before claiming complete DSH host acceptance.
+Alpha.1’s built `lib/client.js` was ESM with a relative shared chunk. The DSH
+0.2.0-rc.2 browser host consumes classic scripts that register lazy CJS factories.
+The official host-served/loader chain rejected alpha.1 with
+`Cannot use import statement outside a module`; standalone Vite tests did not
+exercise this boundary. Alpha.2 builds the server as ESM and the client as one
+self-contained CJS factory registered under `dsh-a2ui`. React remains a host
+singleton. Side effects stay inside the lazy factory.
+
+## What the checks actually establish
+
+- Packed server entry mounts through real Cordis 4.0.5 / DSH ToolRuntime rc.2;
+  canonical output metadata is frozen, invalid and pre-dispatch cancelled calls
+  have no successful metadata, unload removes the tool and remount works.
+- A synthetic profile places the extracted package with a local symlink, then
+  uses real `reconcileProfilePlugins`, `loadProfileDirectory` and `boot`.
+  Bundle auto-activation and the actual plugin’s ACTIVE state are asserted,
+  without compatibility exemptions or a substitute registry.
+- The actual `ClientModuleRegistry` discovers the installed package and serves
+  its artifact. Official `bootInjections` builds the queue; the real rc.2 browser
+  module system runs in jsdom’s outside-only VM. Prefetch must remain lazy;
+  import must expose the client plugin; `/client` reimport must reuse exports;
+  recorded require edges must be only React baseline modules.
+
+Observed 2026-10-23: old alpha.1 artifact fails this real loader path; corrected
+artifact passes. The same checks are now part of the existing CI acceptance job.
+The server-only proof originally landed at `f5d01c6`; this expands its boundary.
+
+## Still unverified
+
+This is not a real DSH CLI or package-manager install. Profile placement
+is synthetic and jsdom is not a browser-rendered DSH shell. Client conversation
+service activation, live streaming/click-to-model turns, session persistence,
+full host cancellation and production deployment remain separate acceptance
+requirements. Do not infer user adoption, full protocol coverage or revenue.

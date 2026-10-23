@@ -2,7 +2,7 @@
 
 An independent, protocol-first A2UI integration for DeepSeek Harness.
 
-**Status: 0.1.0-alpha.1, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
+**Status: 0.1.0-alpha.2, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
 
 ## What you can run today
 
@@ -34,6 +34,7 @@ The adapter is typechecked against the **exact DSH 0.2.0-rc.2 SDK**, with Cordis
 
 ```sh
 npm run build:plugin
+npm run test:packed
 npm pack --ignore-scripts
 ```
 
@@ -41,7 +42,7 @@ The resulting package contains the server entry, client entry and `cordis.patch.
 
 The main model calls `render_a2ui` with `{ "messages": [...] }`. Use `demo/fixture.ts` as a synthetic contract example. In hosts without the browser plugin, the text receipt states only that validation succeeded, not that a UI was displayed. Code Mode rendering is not certified.
 
-A separate [packed server-service acceptance](docs/packed-host-acceptance.md) now verifies loading the actual package through Cordis and the DSH tool execution pipeline, including rejected calls and unload/remount. This is narrower than complete DSH host installation and does not certify the client or model loop.
+The [packed acceptance chain](docs/packed-host-acceptance.md) verifies the real server pipeline, profile bundle auto-activation, host client discovery and official lazy client-module loading. Alpha.2 fixes alpha.1’s incompatible bare-ESM client artifact: DSH requires a classic script registering a lazy CJS factory. CI now tests the packed artifact, not only source components. Profile placement is synthetic; the user CLI/package-manager install, live conversation UI and model loop are not certified.
 
 ## Current limits, not the final product boundary
 
