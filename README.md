@@ -195,3 +195,7 @@ Other DSH A2UI integrations already exist. This project's focus is official-rend
 ## License
 
 MIT for project-authored code. Official A2UI schemas and bundled dependencies retain their respective notices; see [NOTICE.md](NOTICE.md) and [the vendored A2UI license](vendor/a2ui/LICENSE). Not affiliated with or endorsed by DeepSeek, Google, or the A2UI project.
+
+### Using an AG-UI gateway?
+
+Read the [gateway interoperability boundary](docs/ag-ui-gateway-boundary.md) before combining plugins. Extracted standard A2UI operations can be compatible, but tool arguments, cumulative snapshots, settled results and action identities need explicit integration. This native DSH plugin is not a drop-in AG-UI client.

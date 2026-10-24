@@ -12,3 +12,7 @@ Specific initial user: a DSH user already generating or receiving official basic
 Evidence for building is the project owner's explicit request to offer mainstream protocol choice. We have not yet verified an external user's willingness to adopt, a paid need, or absence of equivalent features elsewhere. First validation channel is this repository's documented reproducible example and feedback from DSH/A2UI users through channels that explicitly accept project submissions; no unsolicited promotion has been sent.
 
 Risks: upstream spec churn, DSH pre-release APIs, renderer bundle size, transport/version migration, and the cost of real-host acceptance. Do not turn a source-only comparison into a superiority or demand claim.
+
+## AG-UI transport is a separate integration
+
+The [tested gateway boundary](ag-ui-gateway-boundary.md) distinguishes standard A2UI document compatibility from AG-UI event, result and action wiring. The same `render_a2ui` name does not make the clients interchangeable; no combined adapter is currently provided.
