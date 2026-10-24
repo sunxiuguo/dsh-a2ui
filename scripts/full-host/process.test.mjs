@@ -27,3 +27,11 @@ test('private command cleanup retains a live descendant after direct child close
   assert.equal(alive(),false,'The synthetic regression process group must be removed');
  }
 });
+test('workflow is valid YAML and every full-host step keeps the one-shot gate',async()=>{
+ const {readFile}=await import('node:fs/promises');const {default:yaml}=await import('js-yaml');
+ const workflow=yaml.load(await readFile('.github/workflows/acceptance.yml','utf8'));
+ const steps=workflow.jobs.acceptance.steps.filter(s=>s.name?.includes('full-host'));
+ assert.equal(steps.length,3);
+ for(const step of steps){for(const clause of ["github.event_name == 'push'","github.ref == 'refs/heads/master'","github.run_attempt == '1'","github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'"])assert.ok(step.if.includes(clause));}
+ assert.deepEqual(workflow.permissions,{contents:'read'});
+});
