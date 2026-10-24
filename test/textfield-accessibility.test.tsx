@@ -207,12 +207,15 @@ describe.each(['v0.9','v0.9.1'])('%s TextField accessible control',version=>{
  });
 });
 
-it('changes only the TextField and Slider implementations, not the official catalog contract',()=>{
+it('changes only TextField/Slider presentation and disabled navigation, not the official catalog contract',()=>{
  expect(rendererCatalog).not.toBe(basicCatalog);
  expect(rendererCatalog.id).toBe(CATALOG_ID);
  expect(rendererCatalog.toJson()).toEqual(basicCatalog.toJson());
  expect(rendererCatalog.validationSchema).toEqual(basicCatalog.validationSchema);
- expect([...rendererCatalog.functions]).toEqual([...basicCatalog.functions]);
+ for(const [name,fn]of basicCatalog.functions){
+  if(name==='openUrl'){expect(rendererCatalog.functions.get(name)).not.toBe(fn);expect(rendererCatalog.functions.get(name)!.schema).toBe(fn.schema);}
+  else expect(rendererCatalog.functions.get(name)).toBe(fn);
+ }
  for(const name of ['TextField','Slider']){
   expect(rendererCatalog.components.get(name)).not.toBe(basicCatalog.components.get(name));
   expect(rendererCatalog.components.get(name)?.schema).toBe(basicCatalog.components.get(name)?.schema);

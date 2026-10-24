@@ -26,14 +26,27 @@ function inspect(value:unknown, depth=0):void {
   if(value===null || typeof value!=='object') return;
   for(const [key,item] of Object.entries(value)) {
     if(forbiddenKeys.has(key)) throw new Error('POLICY_KEY: unsafe object key');
-    if(key==='component' && forbiddenComponents.has(String(item))) throw new Error('POLICY_RESOURCE: external media disabled');
-    if(key==='call' && item==='openUrl') throw new Error('POLICY_NAVIGATION: openUrl disabled');
     if(key==='path' && typeof item==='string' && item.split('/').some(x=>forbiddenKeys.has(x))) throw new Error('POLICY_PATH: unsafe path');
     inspect(item,depth+1);
   }
 }
+/** Keep the existing conservative policy throughout authored definitions.
+ * Model values and resolved event data are not definitions. formatString can
+ * still derive calls from data at runtime, so the catalog also denies openUrl
+ * at execution, independently of this early, static check.
+ */
+function inspectAuthored(value:unknown):void {
+  if(value===null || typeof value!=='object')return;
+  for(const [key,item] of Object.entries(value)) {
+    if(key==='component' && forbiddenComponents.has(String(item)))throw new Error('POLICY_RESOURCE: external media disabled');
+    if(key==='call' && item==='openUrl')throw new Error('POLICY_NAVIGATION: openUrl disabled');
+    inspectAuthored(item);
+  }
+}
 export function validateMessage(value:unknown):asserts value is Message {
   inspect(value);
+  const update=(value as Message|null)?.updateComponents;
+  if(update)inspectAuthored(update);
   if(!server(value)) throw new Error('SCHEMA: '+ajv.errorsText(server.errors));
   // This property is valid A2UI, but the pinned official renderer ignores it.
   // Inspect only schema-validated component definitions, never arbitrary model data.

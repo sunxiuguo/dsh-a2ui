@@ -6,8 +6,8 @@
  * attributes and validation descriptions. Vendor sources remain unchanged.
  */
 import {css,html,nothing,type PropertyValues} from 'lit';
-import {type Catalog} from '@a2ui/web_core/v0_9';
-import {basicCatalog,TextFieldApi,SliderApi,isValidCssColor,computeColorVariant,injectBasicCatalogStyles} from '@a2ui/web_core/v0_9/basic_catalog';
+import {createFunctionImplementation,type Catalog} from '@a2ui/web_core/v0_9';
+import {basicCatalog,TextFieldApi,SliderApi,OpenUrlApi,isValidCssColor,computeColorVariant,injectBasicCatalogStyles} from '@a2ui/web_core/v0_9/basic_catalog';
 import {A2uiLitElement,type WebComponentImplementation} from '@a2ui/web_core/v0_9/universal';
 import type {ReactCatalogComponent} from '@a2ui/react/v0_9';
 
@@ -143,10 +143,16 @@ class AccessibleSliderElement extends A2uiLitElement<typeof SliderApi>{
 const accessibleSlider:WebComponentImplementation<typeof SliderApi.schema>={
  ...SliderApi,tagName:'dsh-a2ui-slider',element:AccessibleSliderElement,
 };
+// Reject the capability, not just authored call syntax: formatString reparses
+// model-provided strings, including after edits, streamed updates and replay.
+// Keep the official API/schema while never reaching its navigation executor.
+const disabledOpenUrl=createFunctionImplementation(OpenUrlApi,()=>{
+ throw new Error('POLICY_NAVIGATION: openUrl disabled');
+});
 // Official immutable extension API: retain the published catalog document and
-// every other component/function; replace only TextField/Slider implementations.
+// every other entry; replace TextField/Slider presentation and deny navigation.
 const catalog:Catalog<ReactCatalogComponent>=basicCatalog;
 export const rendererCatalog=catalog.withEntries(
  [...catalog.components.values()].map(component=>component.name==='TextField'?accessibleTextField:component.name==='Slider'?accessibleSlider:component),
- [...catalog.functions.values()],
+ [...catalog.functions.values()].map(fn=>fn.name===OpenUrlApi.name?disabledOpenUrl:fn),
 );
