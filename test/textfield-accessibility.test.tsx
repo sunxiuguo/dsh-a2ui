@@ -207,14 +207,17 @@ describe.each(['v0.9','v0.9.1'])('%s TextField accessible control',version=>{
  });
 });
 
-it('changes only the TextField implementation, not the official catalog contract',()=>{
+it('changes only the TextField and Slider implementations, not the official catalog contract',()=>{
  expect(rendererCatalog).not.toBe(basicCatalog);
  expect(rendererCatalog.id).toBe(CATALOG_ID);
  expect(rendererCatalog.toJson()).toEqual(basicCatalog.toJson());
  expect(rendererCatalog.validationSchema).toEqual(basicCatalog.validationSchema);
  expect([...rendererCatalog.functions]).toEqual([...basicCatalog.functions]);
- expect(rendererCatalog.components.get('TextField')?.schema).toBe(basicCatalog.components.get('TextField')?.schema);
- for(const [name,implementation] of basicCatalog.components)if(name!=='TextField')expect(rendererCatalog.components.get(name)).toBe(implementation);
+ for(const name of ['TextField','Slider']){
+  expect(rendererCatalog.components.get(name)).not.toBe(basicCatalog.components.get(name));
+  expect(rendererCatalog.components.get(name)?.schema).toBe(basicCatalog.components.get(name)?.schema);
+ }
+ for(const [name,implementation] of basicCatalog.components)if(name!=='TextField'&&name!=='Slider')expect(rendererCatalog.components.get(name)).toBe(implementation);
 });
 
 it('preserves root-only theme and weight on the visible flex wrapper',async()=>{

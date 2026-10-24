@@ -5,7 +5,7 @@ It uses the public `Catalog.withEntries()` and
 `A2uiLitElement`/`WebComponentImplementation` APIs. The catalog identifier,
 official component schema, generic reactive binder, data model and function
 implementations remain unchanged. The existing pinned `lit` 3.3.3 runtime is now a direct dependency; it is not
-upgraded. Other components keep their pinned official views. This is a focused presentation adaptation, not a fork of A2UI or a claim
+upgraded. Alpha.10 also adapts Slider; see [its focused scope](slider-accessibility.md). Other components keep their pinned official views. This is a focused presentation adaptation, not a fork of A2UI or a claim
 that the complete catalog is accessible.
 
 ## User task and existing alternative
@@ -49,7 +49,7 @@ role/name queries, label focus, all four variants, overlapping component IDs,
 dynamic labels and export/reload/replay. Consult exact-commit CI for browser
 execution rather than treating test discovery as success.
 
-This is not an audit with every screen reader or a WCAG certification. Slider,
+This is not an audit with every screen reader or a WCAG certification. Slider has [separate focused coverage](slider-accessibility.md);
 DateTimeInput, ChoicePicker, focus order across dialogs, keyboard navigation,
 locale combinations and complete catalog accessibility remain separate work.
 The full native DSH shell/restart result remains the earlier alpha.8 evidence;
