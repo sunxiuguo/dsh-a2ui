@@ -16,6 +16,10 @@ export const FIRST_PROMPT = label => `Show me two synthetic workshop forms for s
 export const CATALOG_ID = 'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json';
 
 const textOf = message => (message?.content ?? []).map(block => block.type === 'text' ? block.text : '').join('');
+// rc.2 AgentLoop appends its documented runtime-context snapshot as a user-role
+// message after genuine input. It is not a new user turn or a session label.
+// Do not skip arbitrary unrecognized user text: those prompts must fail closed.
+const isScenarioUser = message => message.role === 'user' && message.source?.kind !== 'runtime-context';
 const firstPrompt = /^Show me two synthetic workshop forms for session ([AB])\.$/u;
 const surfaceFor = slot => `synthetic-workshop-${slot}`;
 const hash = text => createHash('sha256').update(text).digest('hex').slice(0, 20);
@@ -55,11 +59,11 @@ export function planRequest(options) {
   assert.ok(typeof options.sessionId === 'string' && options.sessionId, 'Real AgentLoop session identity is required.');
   assert.equal(options.purpose, undefined, 'Disable title/compaction auxiliary requests in this bounded scenario.');
   assert.ok(options.tools?.some(tool => tool.name === 'render_a2ui'), 'The installed real tool must be in the official catalog.');
-  const lastUser = options.messages.findLastIndex(message => message.role === 'user');
+  const lastUser = options.messages.findLastIndex(isScenarioUser);
   assert.ok(lastUser >= 0, 'A real persisted user turn is required.');
   const user = options.messages[lastUser];
   const userText = textOf(user);
-  const initial = options.messages.filter(message => message.role === 'user').map(textOf).map(text => firstPrompt.exec(text)).find(Boolean);
+  const initial = options.messages.filter(isScenarioUser).map(textOf).map(text => firstPrompt.exec(text)).find(Boolean);
   const label = initial?.[1] ?? (userText === CANCEL_PROMPT ? 'A' : undefined);
   assert.ok(label, 'Only the declared synthetic A/B scenario is supported.');
   const identity = hash(JSON.stringify([options.sessionId, user.id ?? lastUser, userText]));
