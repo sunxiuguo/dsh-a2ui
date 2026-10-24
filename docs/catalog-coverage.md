@@ -82,3 +82,12 @@ The [validation example](validation-compatibility.md) uses author-supplied
 `checks` with the standard `regex` function on both TextField and Button. Tests
 exercise bad → good → bad model changes, resolved action values, export/restore,
 and the negative control that field checks alone do not disable another Button.
+
+## Atomic DateTimeInput clearing (alpha.13)
+
+The plugin-owned DateTimeInput view preserves the official binder and schema.
+Clearing either half of a combined selection now writes an empty value rather
+than a malformed nonempty ISO fragment. Explicit required checks can therefore
+gate submission correctly; unchecked actions remain unchanged. See the
+[workflow, synthetic regression evidence and limits](datetime-clearing.md).
+This is not comprehensive parsing or date/time conformance.

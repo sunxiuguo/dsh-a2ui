@@ -207,7 +207,7 @@ describe.each(['v0.9','v0.9.1'])('%s TextField accessible control',version=>{
  });
 });
 
-it('changes only TextField/Slider presentation and disabled navigation, not the official catalog contract',()=>{
+it('changes only TextField/Slider/DateTimeInput presentation and disabled navigation, not the official catalog contract',()=>{
  expect(rendererCatalog).not.toBe(basicCatalog);
  expect(rendererCatalog.id).toBe(CATALOG_ID);
  expect(rendererCatalog.toJson()).toEqual(basicCatalog.toJson());
@@ -216,11 +216,11 @@ it('changes only TextField/Slider presentation and disabled navigation, not the 
   if(name==='openUrl'){expect(rendererCatalog.functions.get(name)).not.toBe(fn);expect(rendererCatalog.functions.get(name)!.schema).toBe(fn.schema);}
   else expect(rendererCatalog.functions.get(name)).toBe(fn);
  }
- for(const name of ['TextField','Slider']){
+ for(const name of ['TextField','Slider','DateTimeInput']){
   expect(rendererCatalog.components.get(name)).not.toBe(basicCatalog.components.get(name));
   expect(rendererCatalog.components.get(name)?.schema).toBe(basicCatalog.components.get(name)?.schema);
  }
- for(const [name,implementation] of basicCatalog.components)if(name!=='TextField'&&name!=='Slider')expect(rendererCatalog.components.get(name)).toBe(implementation);
+ for(const [name,implementation] of basicCatalog.components)if(!['TextField','Slider','DateTimeInput'].includes(name))expect(rendererCatalog.components.get(name)).toBe(implementation);
 });
 
 it('preserves root-only theme and weight on the visible flex wrapper',async()=>{

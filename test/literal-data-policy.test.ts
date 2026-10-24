@@ -49,7 +49,7 @@ it('keeps catalog identity, complete schemas, and every unaffected implementatio
  expect(rendererCatalog.id).toBe(CATALOG_ID);expect(rendererCatalog.toJson()).toEqual(basicCatalog.toJson());
  expect(rendererCatalog.functions.get('openUrl')!.schema).toBe(OpenUrlApi.schema);
  for(const [name,fn]of basicCatalog.functions)if(name!=='openUrl')expect(rendererCatalog.functions.get(name)).toBe(fn);
- for(const [name,component]of basicCatalog.components)if(!['TextField','Slider'].includes(name))expect(rendererCatalog.components.get(name)).toBe(component);
+ for(const [name,component]of basicCatalog.components)if(!['TextField','Slider','DateTimeInput'].includes(name))expect(rendererCatalog.components.get(name)).toBe(component);
 });
 
 describe.each(['v0.9','v0.9.1'])('%s literal data versus authored evaluator inputs',version=>{

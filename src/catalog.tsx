@@ -1,13 +1,14 @@
 /*
- * TextField/Slider presentation and basic-theme behavior are adapted from
+ * TextField/Slider/DateTimeInput presentation and basic-theme behavior are adapted from
  * @a2ui/web_core 0.14.0, Copyright 2024 Google LLC, Apache License 2.0.
  * https://www.apache.org/licenses/LICENSE-2.0
  * Changes: plugin-owned element, associated labels, native accessibility
- * attributes and validation descriptions. Vendor sources remain unchanged.
+ * attributes, validation descriptions and atomic DateTimeInput clearing.
+ * Vendor sources remain unchanged.
  */
 import {css,html,nothing,type PropertyValues} from 'lit';
 import {createFunctionImplementation,type Catalog} from '@a2ui/web_core/v0_9';
-import {basicCatalog,TextFieldApi,SliderApi,OpenUrlApi,isValidCssColor,computeColorVariant,injectBasicCatalogStyles} from '@a2ui/web_core/v0_9/basic_catalog';
+import {basicCatalog,TextFieldApi,SliderApi,DateTimeInputApi,OpenUrlApi,isValidCssColor,computeColorVariant,injectBasicCatalogStyles} from '@a2ui/web_core/v0_9/basic_catalog';
 import {A2uiLitElement,type WebComponentImplementation} from '@a2ui/web_core/v0_9/universal';
 import type {ReactCatalogComponent} from '@a2ui/react/v0_9';
 
@@ -143,6 +144,200 @@ class AccessibleSliderElement extends A2uiLitElement<typeof SliderApi>{
 const accessibleSlider:WebComponentImplementation<typeof SliderApi.schema>={
  ...SliderApi,tagName:'dsh-a2ui-slider',element:AccessibleSliderElement,
 };
+/**
+ * Returns the current date formatted as YYYY-MM-DD in the user's local timezone.
+ */
+function getLocalIsoDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+/**
+ * Retains the pinned renderer's minute-display normalization without shifting
+ * timezones. Native time inputs can represent seconds, but this renderer
+ * deliberately displays only HH:MM; broader parsing behavior is unchanged.
+ */
+function normalizeDateTimeValue(value:string, type:'date'|'time'|'datetime-local') {
+    if (!value)
+        return '';
+    const hasT = value.includes('T');
+    if (hasT) {
+        const [datePart, timePart] = value.split('T');
+        switch (type) {
+            case 'date':
+                return datePart?.substring(0, 10) ?? '';
+            case 'time':
+                return timePart?.substring(0, 5) ?? '';
+            case 'datetime-local':
+                return `${datePart?.substring(0, 10) ?? ''}T${timePart?.substring(0, 5) ?? ''}`;
+        }
+    }
+    // Not ISO with 'T': value might be just date ('YYYY-MM-DD') or just time ('HH:MM')
+    if (type === 'date') {
+        return value.includes('-') ? value.substring(0, 10) : '';
+    }
+    if (type === 'time') {
+        return value.includes(':') ? value.substring(0, 5) : '';
+    }
+    return '';
+}
+class ClearableDateTimeInputElement extends A2uiLitElement<typeof DateTimeInputApi>{
+ protected readonly api=DateTimeInputApi;
+ protected createRenderRoot(){return this;}
+ connectedCallback(){super.connectedCallback();injectBasicCatalogStyles();}
+ willUpdate(changed:PropertyValues){
+  super.willUpdate(changed);
+  const props=this.controller?.props;
+  if(props?.weight!==undefined)this.style.flex=String(props.weight);
+  else this.style.removeProperty('flex');
+  const primary=this.context?.theme?.primaryColor;
+  if(typeof primary==='string'&&isValidCssColor(primary)){
+   this.style.setProperty('--a2ui-color-primary',primary);
+   this.style.setProperty('--a2ui-color-primary-light',computeColorVariant('light',{colorVar:'--a2ui-color-primary'}));
+   this.style.setProperty('--a2ui-color-primary-dark',computeColorVariant('dark',{colorVar:'--a2ui-color-primary'}));
+   this.style.setProperty('--a2ui-color-primary-hover',computeColorVariant('hover',{darkVar:'--a2ui-color-primary-dark',lightVar:'--a2ui-color-primary-light'}));
+  }else for(const name of ['--a2ui-color-primary','--a2ui-color-primary-light','--a2ui-color-primary-dark','--a2ui-color-primary-hover'])this.style.removeProperty(name);
+  // These extra v0.9 attributes are preserved by the official binder as
+  // literals, not newly interpreted as dynamic schema properties.
+  // Retain the official DateTimeInput host-level name/description behavior.
+  for(const [attribute,value] of [['aria-label',props?.accessibility?.label],['aria-description',props?.accessibility?.description]] as const){
+   if(value!==undefined&&value!==null&&value!=='')this.setAttribute(attribute,String(value));
+   else this.removeAttribute(attribute);
+  }
+  const accessibility=props?.accessibility as typeof props.accessibility&{hidden?:boolean;live?:string};
+  if(typeof accessibility?.hidden==='boolean')this.setAttribute('aria-hidden',String(accessibility.hidden));
+  else this.removeAttribute('aria-hidden');
+  if(accessibility?.live)this.setAttribute('aria-live',String(accessibility.live));
+  else this.removeAttribute('aria-live');
+ }
+    render() {
+        const props = this.controller?.props;
+        if (!props)
+            return nothing;
+        const enableTime = props.enableTime ?? false;
+        const enableDate = props.enableDate ?? !enableTime;
+        const rawValue = typeof props.value === 'string' ? props.value : props.value ? String(props.value) : '';
+        const rawMin = typeof props.min === 'string' ? props.min : props.min ? String(props.min) : '';
+        const rawMax = typeof props.max === 'string' ? props.max : props.max ? String(props.max) : '';
+        const dateValue = normalizeDateTimeValue(rawValue, 'date');
+        const timeValue = normalizeDateTimeValue(rawValue, 'time');
+        const minDate = normalizeDateTimeValue(rawMin, 'date');
+        const maxDate = normalizeDateTimeValue(rawMax, 'date');
+        const minTime = normalizeDateTimeValue(rawMin, 'time');
+        const maxTime = normalizeDateTimeValue(rawMax, 'time');
+        const handleDateChange = (event:Event) => {
+            const date = (event.target as HTMLInputElement).value;
+            // A cleared native input means no composite selection, not an invalid ISO fragment.
+            if (!date) { props.setValue?.(''); return; }
+            if (enableTime) {
+                const time = rawValue.includes('T')
+                    ? rawValue.split('T')[1]
+                    : rawValue.includes(':')
+                        ? rawValue
+                        : '00:00:00';
+                props.setValue?.(`${date}T${time}`);
+            }
+            else {
+                props.setValue?.(date);
+            }
+        };
+        const handleTimeChange = (event:Event) => {
+            const time = (event.target as HTMLInputElement).value;
+            if (!time) { props.setValue?.(''); return; }
+            if (enableDate) {
+                const date = rawValue.includes('T')
+                    ? rawValue.split('T')[0]
+                    : rawValue.includes('-')
+                        ? rawValue
+                        : getLocalIsoDate();
+                props.setValue?.(`${date}T${time}:00`);
+            }
+            else {
+                props.setValue?.(time);
+            }
+        };
+        return html `
+      <div class="a2ui-date-time-container">
+        ${props.label ? html `<label class="a2ui-date-time-label">${props.label}</label>` : nothing}
+        <div class="a2ui-date-time-inputs">
+          ${enableDate
+            ? html `
+                <input
+                  type="date"
+                  min=${minDate || nothing}
+                  max=${maxDate || nothing}
+                  .value=${dateValue}
+                  @change=${handleDateChange}
+                  class="a2ui-date-time-input"
+                />
+              `
+            : nothing}
+          ${enableTime
+            ? html `
+                <input
+                  type="time"
+                  min=${minTime || nothing}
+                  max=${maxTime || nothing}
+                  .value=${timeValue}
+                  @change=${handleTimeChange}
+                  class="a2ui-date-time-input"
+                />
+              `
+            : nothing}
+        </div>
+        ${props.isValid===false ? (props.validationErrors??[]).map(message=>html`<div class="a2ui-error-message">${message}</div>`) : nothing}
+      </div>
+    `;
+    }
+ static styles=css `
+    .a2ui-date-time-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--a2ui-spacing-xs, 4px);
+      width: var(--a2ui-datetimeinput-width, 100%);
+    }
+    input {
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .a2ui-date-time-label {
+      font-size: var(
+        --a2ui-datetimeinput-label-font-size,
+        var(--a2ui-label-font-size, var(--a2ui-font-size-s, 14px))
+      );
+      font-weight: var(--a2ui-datetimeinput-label-font-weight, bold);
+      color: var(--a2ui-text-color-text, var(--a2ui-color-on-background, #333));
+    }
+    .a2ui-date-time-inputs {
+      display: flex;
+      gap: var(--a2ui-spacing-s, 8px);
+      width: 100%;
+    }
+    .a2ui-date-time-input {
+      padding: var(--a2ui-datetimeinput-padding, 8px);
+      border-radius: var(--a2ui-datetimeinput-border-radius, 4px);
+      border: var(--a2ui-datetimeinput-border, 1px solid var(--a2ui-color-border, #ccc));
+      background-color: var(--a2ui-datetimeinput-background, var(--a2ui-color-input, #fff));
+      color: var(--a2ui-datetimeinput-color, var(--a2ui-color-on-input, #333));
+      font-family: inherit;
+      flex: 1;
+    }
+    .a2ui-date-time-input::-webkit-datetime-edit,
+    .a2ui-date-time-input::-webkit-datetime-edit-fields-wrapper {
+      color: var(--a2ui-datetimeinput-color, var(--a2ui-color-on-input, #333));
+    }
+    .a2ui-error-message {
+      color: var(--a2ui-datetimeinput-color-error, red);
+      font-size: var(--a2ui-font-size-xs, 0.75rem);
+    }
+  `;
+
+}
+const clearableDateTimeInput:WebComponentImplementation<typeof DateTimeInputApi.schema>={
+ ...DateTimeInputApi,tagName:'dsh-a2ui-datetimeinput',element:ClearableDateTimeInputElement,
+};
 // Reject the capability, not just authored call syntax: formatString reparses
 // model-provided strings, including after edits, streamed updates and replay.
 // Keep the official API/schema while never reaching its navigation executor.
@@ -150,9 +345,9 @@ const disabledOpenUrl=createFunctionImplementation(OpenUrlApi,()=>{
  throw new Error('POLICY_NAVIGATION: openUrl disabled');
 });
 // Official immutable extension API: retain the published catalog document and
-// every other entry; replace TextField/Slider presentation and deny navigation.
+// every other entry; replace TextField/Slider/DateTimeInput presentation and deny navigation.
 const catalog:Catalog<ReactCatalogComponent>=basicCatalog;
 export const rendererCatalog=catalog.withEntries(
- [...catalog.components.values()].map(component=>component.name==='TextField'?accessibleTextField:component.name==='Slider'?accessibleSlider:component),
+ [...catalog.components.values()].map(component=>component.name==='TextField'?accessibleTextField:component.name==='Slider'?accessibleSlider:component.name==='DateTimeInput'?clearableDateTimeInput:component),
  [...catalog.functions.values()].map(fn=>fn.name===OpenUrlApi.name?disabledOpenUrl:fn),
 );
