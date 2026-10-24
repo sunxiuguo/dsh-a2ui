@@ -25,3 +25,28 @@ jobs:
       - run: npm run test:packed
       - run: google-chrome --version
       - run: npm run test:browser
+      - name: Record standalone synthetic showcase
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          npx --no-install playwright install ffmpeg
+          npm run dev -- --port 4173 --strictPort > /tmp/dsh-a2ui-showcase-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4173/ > /dev/null
+          timeout 180s node scripts/record-showcase.mjs
+      - name: Preserve only reviewed synthetic video and receipt
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dsh-a2ui-synthetic-showcase-${{ github.sha }}
+          path: |
+            showcase-video/dsh-a2ui-synthetic-demo.webm
+            showcase-video/receipt.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+          include-hidden-files: false

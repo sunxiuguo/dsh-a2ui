@@ -10,3 +10,5 @@ playwright-report
 
 .packed-acceptance-*/
 .profile-*/
+
+showcase-video/
