@@ -14,7 +14,10 @@ interface Injected {send:(action:Message)=>Promise<void>}
 function ClientSurface({node,send}:Pick<ChatNodeViewProps<'a2ui-document'>,'node'>&Injected){
  const data=node.data;
  const onAction=useCallback(async(action:Message)=>{try{await send(action);}catch{throw new Error('Action was not confirmed by DSH. It has not been retried. Check the conversation before trying again.');}},[send]);
- const session=useMemo(()=>{const s=new SurfaceSession(onAction,!data.running);if(data.messages.length)s.append(data.messages,!data.running);return s;},[data.messages,onAction,data.running]);
+ // DSH resync rebuilds equal arrays; reference identity is not document identity.
+ // This cache belongs only to this mounted node, never to a global session map.
+ const documentKey=JSON.stringify(data.messages);
+ const session=useMemo(()=>{const messages:Message[]=JSON.parse(documentKey);const s=new SurfaceSession(onAction,!data.running);if(messages.length)s.append(messages,!data.running);return s;},[documentKey,onAction,data.running,data.error,node.key,node.id]);
  useEffect(()=>()=>session.dispose(),[session]);
  return <section aria-label="A2UI document"><small>{data.running?'A2UI preview. Interaction is disabled until final validation.':'Agent-generated A2UI. Review before interacting.'}</small>{data.error?<p role="alert">{data.error}</p>:<div {...(data.running?{inert:''}:{})} aria-disabled={data.running}><SurfaceView session={session}/></div>}</section>;
 }

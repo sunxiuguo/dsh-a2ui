@@ -2,7 +2,7 @@
 
 An independent, protocol-first A2UI integration for DeepSeek Harness.
 
-**Status: 0.1.0-alpha.5, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
+**Status: 0.1.0-alpha.6, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
 
 ## What you can run today
 
@@ -47,9 +47,9 @@ The [packed acceptance chain](docs/packed-host-acceptance.md) verifies the real 
 
 ## Current limits, not the final product boundary
 
-This alpha permits only the official basic catalog and bounds documents to 256 KiB, 512 messages, 8 active surfaces and 256 components per surface. It disables external media components and navigation, including external links/media in Markdown, as an initial deployment policy. That policy is narrower than A2UI itself. Actions are limited before sending to 16 KiB each, 128 attempts per session, and a 256 KiB retained/in-flight budget. Streaming DSH previews cannot send actions before final tool validation; failed/cancelled results withdraw the preview. Recordings bound history, snapshots and actions separately and never resend historical actions.
+This alpha permits only the official basic catalog and bounds documents to 256 KiB, 512 messages, 8 active surfaces and 256 components per surface. It disables external media components and navigation, including external links/media in Markdown, as an initial deployment policy. That policy is narrower than A2UI itself. Actions are limited before sending to 16 KiB each, 128 attempts per mounted A2UI document session, and a 256 KiB retained/in-flight budget. Streaming DSH previews cannot send actions before final tool validation; failed/cancelled results withdraw the preview. Recordings bound history, snapshots and actions separately and never resend historical actions.
 
-The demo export preserves edits. DSH durable metadata replays the model-authored document; unsent local edits are not yet persisted across a DSH reload. Sent actions are carried by ordinary DSH conversation history. Cross-turn action-aware restoration, host-managed export/import, cancellation and Code Mode parity are follow-on work, not completed claims.
+Alpha.6 keeps local edits when the same mounted host node receives an identical serialized document during session resync. A changed document, node identity, preview/error state, or session teardown resets that in-memory state; this is not browser storage or reload persistence. The demo export preserves edits. DSH durable metadata replays the model-authored document; unsent local edits are not yet persisted across a DSH reload. Sent actions are carried by ordinary DSH conversation history. Cross-turn action-aware restoration, host-managed export/import, cancellation and Code Mode parity are follow-on work, not completed claims.
 
 No transport fetching, arbitrary remote catalogs, dynamic code, HTML injection, credentials or payment actions are included. A2UI v1.0 is a release candidate upstream and is not supported here yet.
 
