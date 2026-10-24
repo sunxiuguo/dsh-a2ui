@@ -110,3 +110,17 @@ DSH may rebuild a canonical conversation node from the same event window during 
 Changed canonical content, a different node, lifecycle/error changes, or component teardown invalidate this in-memory ownership. No localStorage, IndexedDB, global cache, or backend draft write exists. A page reload or a new session generation does not restore unsent edits. Object-key reordering that changes the serialized document is conservatively treated as a changed document. This does not claim full-shell/model or durable submitted-state replay.
 
 The reactive packed fixture subscribes to the official conversation target and drives `eventSource.replace`, rather than manually rerendering a test root. Five cases cover retained unsent text, retained rejected-delivery status, an exhausted action budget, replacement by a genuinely changed document (including the next explicit action payload), and actual renderer unmount/remount. Equal replay keeps the same slot DOM and binding while receiving fresh canonical node objects. No resync sends an action, and the other session stays isolated. Cross-generation remote transport and a complete DSH browser shell remain outside this fixture.
+
+## Scripted model loop with actual tool and UI events
+
+The [no-key walkthrough](synthetic-loop.md) now runs against the extracted packed
+artifact as part of `test:packed`. Unlike the earlier hand-authored lifecycle
+fixtures, the official AgentLoop creates these tool calls and results. The actual
+form action reaches a second agent turn with the edited topic, and that turn
+produces another validated A2UI surface. Assertions require two completed turns,
+four provider calls, two real tool results and exactly one explicit UI action.
+
+Only the model provider and transport bridge are scripted; the root/target and
+jsdom remain minimal fixtures. This adds an executable model-loop contract, not
+live-model access, transient streaming preview, full shell/composer, server
+SessionController/HTTP, persistence, cancellation or production certification.

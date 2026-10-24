@@ -18,6 +18,19 @@ Open the local URL printed by Vite. Click **Stream synthetic example**, edit the
 
 The example is synthetic. It performs no booking, payment, external request, model call, or customer-data access. No account or API key is needed. The standalone demo's action sink is a local log, not a live DSH session.
 
+## Follow a form action into the next agent turn
+
+From this repository checkout, run `npm run build:plugin` and then
+`npm run demo:loop -- "Wheel-thrown pottery"` after installing dependencies above.
+The [no-key walkthrough](docs/synthetic-loop.md) drives the real DSH AgentLoop,
+ToolRuntime and official conversation renderer: a scripted local model produces a
+form, the example edits and clicks it in jsdom, and the next actual agent turn
+receives that action and renders a preview. It exits nonzero if this chain breaks.
+
+The model and in-process transport are synthetic. This is an executable developer
+walkthrough, not an interactive browser, full DSH shell or live model certification.
+The plugin tarball does not include this example or its development dependencies.
+
 ## The integration
 
 - Standard A2UI v0.9 / v0.9.1 message envelopes and official basic-catalog schemas, pinned from the v0.9.1 specification.
@@ -39,7 +52,7 @@ npm run test:packed
 npm pack --ignore-scripts
 ```
 
-The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Official CLI tarball installation was verified on 2026-10-23** using DSH `0.2.0-rc.2` and pnpm `11.25.0` in an empty isolated profile, with lifecycle scripts disabled. The CLI installed alpha.3 and automatically registered its bundle; the installed 90 files matched the packed artifact. That empty profile does not include the eight host peers, so this is not a complete runnable host. The standalone synthetic browser roundtrip passed in sandboxed Google Chrome 155.0.8059.39 on [this exact-commit CI run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40027979260); this is not host acceptance.
+The resulting package contains the server entry, client entry and `cordis.patch.yml` bundle contribution. Install the local package through your DSH profile's supported plugin-package workflow. This project does not change your global profile, permissions, model, or credentials. It is not published to npm yet. **Official CLI tarball installation was verified on 2026-10-23** using DSH `0.2.0-rc.2` and pnpm `11.25.0` in an empty isolated profile, with lifecycle scripts disabled. The CLI installed alpha.3 and automatically registered its bundle; the installed 90 files matched the packed artifact. That empty profile does not include the eight host peers, so this is not a complete runnable host. The standalone synthetic browser roundtrip passed in sandboxed Google Chrome 155.0.8059.39 on [this exact-commit CI run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40058682777); this is not host acceptance.
 
 The main model calls `render_a2ui` with `{ "messages": [...] }`. Use `demo/fixture.ts` as a synthetic contract example. In hosts without the browser plugin, the text receipt states only that validation succeeded, not that a UI was displayed. Code Mode rendering is not certified.
 

@@ -12,7 +12,8 @@
     "dev": "vite --host 127.0.0.1",
     "build:plugin": "vite build --config vite.plugin.config.ts && vite build --config vite.client.config.ts",
     "test:browser": "playwright test",
-    "test:packed": "node scripts/verify-packed.mjs"
+    "test:packed": "node scripts/verify-packed.mjs",
+    "demo:loop": "node examples/synthetic-loop.mjs"
   },
   "dependencies": {
     "@a2ui/markdown-it": "0.2.2",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.5",
+    "@deepseek-ai/dsh-agent-loop": "0.2.0-rc.2",
     "@deepseek-ai/dsh-api-session-controller": "0.2.0-rc.2",
     "@deepseek-ai/dsh-app-boot": "0.2.0-rc.2",
     "@deepseek-ai/dsh-client-modules": "0.2.0-rc.2",
