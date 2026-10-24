@@ -1,0 +1,16 @@
+{
+  "name": "dsh-a2ui-full-host-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-web-frontend": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
+    "@deepseek-ai/cordis": "4.0.5",
+    "pnpm": "11.25.0"
+  },
+  "overrides": {
+    "@deepseek-ai/cordis": "4.0.5"
+  }
+}

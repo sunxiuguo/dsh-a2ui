@@ -12,3 +12,6 @@ playwright-report
 .profile-*/
 
 showcase-video/
+
+full-host-evidence/
+scripts/full-host/runtime/provider.mjs
