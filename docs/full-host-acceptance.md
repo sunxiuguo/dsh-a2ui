@@ -1,7 +1,28 @@
 # Full DSH Web-host acceptance
 
-Status: prepared, not yet an executed passing result. This is separate from the
-standalone browser demo and the SDK/jsdom examples.
+Status: **passed for the bounded synthetic scenario** at source
+[`a8bb06d8`](https://github.com/sunxiuguo/dsh-a2ui/commit/a8bb06d8acdfdc9bcffb005fd34a378ec741c312),
+[run 40092097281](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40092097281),
+on 2026-10-24 from 12:01:18 to 12:01:36 UTC. This is the actual shipped Web host,
+separate from the standalone browser demo and SDK/jsdom examples.
+
+The [unaltered receipt](evidence/full-host-a8bb06d8.json) records 132 HTTP RPC
+requests, two WebSocket connections, two nonempty persistence files, zero
+external requests, zero page errors and verified cleanup. Its `visualReview`
+field is the automation-time value; subsequent independent review of both
+[Session A](assets/full-host-session-a.png) and
+[restored Session B](assets/full-host-session-b-restored.png) found no blocking
+privacy or legibility issue. Session B is naturally scrolled and is not a full
+conversation overview. These screenshots are real, unmodified synthetic runs,
+not interface mockups.
+
+An initial YAML parse failure executed no jobs. Two early host attempts stopped
+at the first synthetic turn and verified cleanup. A source-backed native
+AgentLoop regression established that the scripted provider was mistaking
+`source.kind: runtime-context` user-role messages for human input. The correction
+ignores only that documented context source; strict unknown-input and
+cross-session checks remain. This was a test-provider integration correction,
+not a claim that a live model was repaired.
 
 The harness installs the packed plugin through the official DSH 0.2.0-rc.2 CLI,
 serves the shipped Web frontend, and uses actual HTTP RPC and WebSocket mux
@@ -19,8 +40,8 @@ handling, tool execution, rendering and JSONL persistence remain real.
   reopening the same conversations without replaying historical actions.
 - Authored history and unsent draft behavior are asserted separately.
 
-An execution may uncover integration failures. Preparation, source review and
-provider unit tests are not proof of full-host compatibility. Live models,
+This passing execution covers only the pinned source, host and scenario.
+Preparation or provider unit tests alone were not treated as acceptance. Live models,
 complete protocol semantics, accessibility, deployment security and all component
 variants remain outside this bounded synthetic run.
 
@@ -44,8 +65,8 @@ Cleanup closes the browser context and native host process group, removes only
 the current invocation's test world, and verifies removal. The only CI uploads are
 an allowlisted sanitized receipt and two post-login synthetic UI screenshots; it excludes the home, configuration, logs,
 profiles and credentials. Screenshots require separate visual inspection before claiming visual acceptance.
-Failure reports give the phase and error class rather
-than token-bearing Playwright or host output.
+Failure reports give the phase, error class, allowlisted harness source coordinate
+and fixed event counts rather than token-bearing Playwright or host output.
 
 ## Execution policy
 

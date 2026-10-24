@@ -1,5 +1,10 @@
 # Packed profile and client-module acceptance
 
+This page records the narrower packed/SDK fixtures and their historical limits.
+The later [actual Web-host acceptance](full-host-acceptance.md) separately passed
+the bounded synthetic HTTP/WebSocket, dual-session and process-restart scenario.
+Do not treat either layer as live-model or full-catalog certification.
+
 Run after `npm ci --ignore-scripts`:
 
 ```sh

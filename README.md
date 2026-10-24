@@ -2,21 +2,29 @@
 
 ## A2UI for DeepSeek Harness conversations
 
-DSH A2UI is an independent plugin project for bringing standard, agent-generated interfaces into DeepSeek Harness. The goal is a complete conversation loop: the agent presents an interface, the user interacts, and that action becomes the next agent turn.
+DSH A2UI is an independent plugin for rendering standard, agent-generated interfaces inside DeepSeek Harness conversations. An agent presents an interface, the user interacts, and that action becomes the next agent turn.
 
 It uses the official A2UI schemas and renderer, with explicit validation, streamed previews, session-scoped actions, and replay that does not execute past interactions.
 
-[Watch the synthetic demo](https://github.com/a2ui-project/a2ui/discussions/3604) · [Try it locally](#quick-start) · [Compatibility](#compatibility-and-support) · [Roadmap](#roadmap) · [Report an issue](https://github.com/sunxiuguo/dsh-a2ui/issues)
+[See it in DSH](#see-it-in-deepseek-harness) · [Try it locally](#quick-start) · [Compatibility](#compatibility-and-support) · [Roadmap](#roadmap) · [Report an issue](https://github.com/sunxiuguo/dsh-a2ui/issues)
 
-**Development preview: 0.1.0-alpha.8.** The standalone browser and bounded DSH SDK workflows are reproducible today. Complete A2UI support inside a full DSH Web host is the product direction, not a completed acceptance claim. This is an additional project, not a replacement for DSH GenUI.
+**Development preview: 0.1.0-alpha.8.** A bounded synthetic workflow now passes in the official DSH Web host, including native plugin installation, HTTP RPC/WebSocket transport, two-session interaction, cancellation and restart restoration of authored history. The provider is scripted; live models and complete A2UI conformance are not certified. This is an additional project, not a replacement for DSH GenUI.
 
-## See the interaction
+## See it in DeepSeek Harness
 
-[![The actual standalone DSH A2UI demo: an edited synthetic form and its locally logged action. This is not the DSH Web host.](docs/assets/synthetic-preview.png)](https://github.com/a2ui-project/a2ui/discussions/3604)
+[![Actual DeepSeek Harness Web shell showing two synthetic A2UI forms, an interaction and its next-turn preview. The model provider is scripted.](docs/assets/full-host-session-a.png)](docs/full-host-acceptance.md)
 
-The [23-second recording](https://github.com/user-attachments/assets/4449b7b4-e0e2-45b6-af94-641660bc6743) shows the real standalone UI: invalid input is blocked, a valid action is logged, and an explicitly exported recording restores the edited value after a page reload without resending its historical action. It also shows a visible rejection of an unsupported runtime property.
+The actual DSH Web conversation, not a standalone renderer page: two A2UI surfaces, a user action and the next agent turn's preview. **The model provider and workshop data are synthetic.** No live model, real account, booking, payment or customer data was used.
 
-**Synthetic data only.** There is no live model, external service, booking, payment, or customer data in this demo. The screenshot is an unmodified frame from the recording at 8.5 seconds. Both come from source commit [`a8d1170`](https://github.com/sunxiuguo/dsh-a2ui/commit/a8d117041d9775347805a827d3d723a7601c1478), whose [acceptance run passed](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40086848889). This evidence covers that commit, not later revisions. See [how to reproduce the capture](docs/showcase-recording.md).
+[Full-host acceptance run 40092097281](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40092097281) passed on 2026-10-24 at source [`a8bb06d8`](https://github.com/sunxiuguo/dsh-a2ui/commit/a8bb06d8acdfdc9bcffb005fd34a378ec741c312). It exercised the official CLI and Web shell over actual HTTP RPC and WebSocket transport: two isolated sessions, a controlled pre-admission action failure and deliberate retry, native Stop and recovery, then graceful process restart and reopening without resending history.
+
+The [restored Session B screenshot](docs/assets/full-host-session-b-restored.png), [unaltered receipt](docs/evidence/full-host-a8bb06d8.json) and [full acceptance boundary](docs/full-host-acceptance.md) document that run. Both screenshots were reviewed for privacy and legibility. Authored messages and submitted-action previews persist; **unsent field drafts do not**. This evidence covers the exact source and scenario, not all models, components or failure modes.
+
+### Standalone validation and replay demo
+
+The earlier [23-second recording](https://github.com/user-attachments/assets/4449b7b4-e0e2-45b6-af94-641660bc6743) isolates the renderer: invalid input is blocked, a valid action is logged locally, and an explicitly exported recording restores an edited value after reload without resending its historical action. It also shows rejection of an unsupported runtime property.
+
+This video is a standalone synthetic page, not the DSH host shown above. It comes from [`a8d1170`](https://github.com/sunxiuguo/dsh-a2ui/commit/a8d117041d9775347805a827d3d723a7601c1478) and [its passing capture run](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40086848889). See the [community showcase](https://github.com/a2ui-project/a2ui/discussions/3604) or [reproduce the capture](docs/showcase-recording.md).
 
 ## What this project is building
 
@@ -85,7 +93,7 @@ Agent tool call: render_a2ui({ messages })
   → next agent turn
 ```
 
-While a tool call is streaming, partial arguments can produce a preview. Its controls cannot send actions until final tool validation succeeds. Failed or cancelled results withdraw the preview within the tested SDK pipeline.
+While a tool call is streaming, partial arguments can produce a preview. Its controls cannot send actions until final tool validation succeeds. SDK fixtures cover failed/cancelled-result withdrawal; the native-host run additionally verifies that Stop retires an in-progress preview before successful tool completion and that a later action still works.
 
 The server and client are separate plugin entries. Without the browser plugin, the tool's text receipt confirms validation only, not that an interface appeared. The client submits action data through DSH's conversation send controller; client-side checks are not authorization or a substitute for server validation.
 
@@ -101,11 +109,11 @@ This matrix describes the alpha's bounded implementation and evidence, not compl
 | Official runtime | `@a2ui/react` and `@a2ui/web_core` 0.14.0 | Other renderer versions and cross-renderer parity are not certified. |
 | Basic catalog | Contract fixtures for 15 permitted components and 13 permitted functions; separate function-result tests | Full variants, interactions, locales, accessibility and semantic conformance remain open. See [coverage](docs/catalog-coverage.md). |
 | Validation | Explicit `checks` with `regex`, including independently gated Buttons | `TextField.validationRegexp` is valid A2UI but ignored by the pinned runtime, so alpha.8 rejects it with `COMPATIBILITY`, even when empty or combined with `checks`. No automatic rewrite occurs. |
-| Streaming | Incremental JSONL and DSH tool-argument previews; actual SDK follow/assistant-stream success and cancellation fixtures | The physical carrier is in-process; full-shell and HTTP/WebSocket cancellation are unverified. |
-| Actions | Session-scoped send, visible delivery errors, retained edited values after a rejected send, no automatic retry | An unconfirmed send may be ambiguous. Check the conversation before submitting again. |
+| Streaming | Incremental JSONL and DSH tool-argument previews; native Web-host streaming over HTTP RPC/WebSocket with inert previews and Stop cancellation | The provider is scripted. Cancellation during/after tool execution and broader network-recovery behavior are not certified. |
+| Actions | Two native sessions with overlapping surface IDs; actions reach the owning next turn. Controlled pre-admission HTTP rejection retains edits; deliberate retry is admitted once in the tested scenario. | No automatic retry was observed in the bounded test. This is not an exactly-once guarantee; unconfirmed delivery can still be ambiguous. |
 | Replay and state | Export/import preserves field snapshots without sending history; identical document resync retains state in the same mounted node | A changed document, node, preview/error state or teardown resets that in-memory state. Unsent edits do not survive a DSH reload. |
-| Durable history | Official JSONL backend fixtures restore model-authored tool-result metadata; sent actions use ordinary DSH conversation history | Durable browser drafts, host-managed export/import and action-aware full UI restoration remain open. |
-| DSH integration | Exact SDK **0.2.0-rc.2**, Cordis **4.0.5**; packed server, client-loader, scoped UI and agent-loop fixtures | Broad semver ranges do not certify other versions. Full Web shell, real network transport, persistent reopen and live-model acceptance remain unverified. |
+| Durable history | Both native sessions reopen after graceful host restart and a fresh browser context, with exact authored metadata and submitted-action previews; no new model call or action is sent by restoration. | Unsent drafts are not durable. Crash recovery, host-managed export/import and restoration of every interaction state remain open. |
+| DSH integration | Official **0.2.0-rc.2 CLI and Web shell**, Cordis **4.0.5**; packed alpha.8 installation and the bounded native-host scenario passed. | Other versions, live-model workflows, Code Mode and production deployment are not certified. See [full-host evidence](docs/full-host-acceptance.md). |
 
 Upstream identifies [A2UI v0.9.1 as current and v1.0 as a candidate](https://a2ui.org/). This bridge's support is narrower than the standard. See the [packed acceptance ledger](docs/packed-host-acceptance.md) for the exact test boundaries and alpha regression history.
 
@@ -119,9 +127,19 @@ npm run test:packed
 npm pack --ignore-scripts
 ```
 
-The package contains server and client entries plus its `cordis.patch.yml` bundle contribution. It is **not published to npm**. Install the local artifact through your supported DSH profile plugin-package workflow; this repository does not configure your global profile, model, credentials or permissions.
+The package contains server and client entries plus its `cordis.patch.yml` bundle contribution. It is **not published to npm**.
 
-The official DSH 0.2.0-rc.2 CLI with pnpm 11.25.0 installed an **alpha.3** tarball into an empty isolated profile on 2026-10-23, with lifecycle scripts disabled, correct package bytes and automatic bundle registration. That profile lacked the eight host peers. This historical installation result is not alpha.8 full-host activation or a complete runnable DSH deployment. Code Mode rendering is not certified.
+If you already have the compatible DSH **0.2.0-rc.2** installation and a complete Web profile, replace `YOUR_EXISTING_WEB_PROFILE` with that profile's name and install the local tarball using the native CLI syntax exercised by the acceptance run:
+
+```sh
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE add ./dsh-a2ui-0.1.0-alpha.8.tgz --ignore-scripts
+```
+
+This command targets that existing profile; it does not create a complete DSH installation. Configure any real model and its credentials yourself through DSH's normal settings. Real-model behavior remains outside this acceptance result.
+
+The official DSH 0.2.0-rc.2 CLI installed the packed **alpha.8** plugin into a new complete Web profile in the [2026-10-24 full-host acceptance](docs/full-host-acceptance.md). The shipped shell loaded it and completed the bounded synthetic interaction/restart scenario, with lifecycle scripts disabled. This supersedes the earlier alpha.3 empty-profile installation-only evidence. Code Mode and other host versions remain unverified.
+
+The full-host harness is a separately authorized, isolated acceptance experiment, not part of the ordinary local quick start or an automatically recurring test. Its temporary native test credentials are removed during verified cleanup; it does not import an existing user profile.
 
 ## Deployment boundaries
 
@@ -132,16 +150,16 @@ The initial policy is deliberately narrower than A2UI:
 - Documents are limited to 256 KiB, 512 messages, 8 active surfaces and 256 components per surface.
 - Actions are limited to 16 KiB each, 128 attempts per mounted A2UI document session, and a 256 KiB retained/in-flight budget.
 - Recordings bound authored history, field snapshots and actions separately, so snapshots do not consume the 512-message history allowance. Import restores UI state only; past actions never execute.
-- No credential or payment actions are included. All examples and acceptance fixtures use synthetic data.
+- The plugin exposes no credential or payment actions. All examples use synthetic data; the separately authorized full-host harness creates only temporary native test authentication and verifies its removal.
 
 ## Roadmap
 
-1. **Complete the DSH conversation experience.** Prove the packed plugin in a supported full Web host: streaming, HTTP/WebSocket delivery, click → model turn, persistent reopen, multiple surfaces, failed delivery and cancellation.
+1. **Expand native-host coverage.** Build on the passing synthetic Web-host scenario with live-model workflows, additional cancellation phases, network interruption/reconnection, crash recovery and supported deployment configurations.
 2. **Complete stable A2UI support.** Cover the full basic catalog, theme/validation/function semantics, accessibility and cross-renderer behavior. Introduce a deliberate host-managed policy before enabling media or navigation.
-3. **Make interaction history durable.** Restore edits and submitted state accurately across host reloads, with versioned migrations and no accidental action replay.
+3. **Persist more interaction state.** Authored history already survives the tested graceful restart. Evaluate opt-in draft persistence only for a demonstrated workflow, with an explicit privacy/lifecycle contract; extend submitted-state restoration with versioned migrations and no accidental action replay.
 4. **Add protocols through explicit adapters.** Evaluate A2UI v1.0 as its contract stabilizes and other mainstream protocols without disguising proprietary payloads as standards.
 
-A feature moves to supported when its end-to-end evidence and limitations are documented. The standalone demo and SDK fixtures are steps toward that destination, not the final product boundary.
+A feature moves to supported when its end-to-end evidence and limitations are documented. The native-host result verifies a bounded workflow; complete protocol support remains the direction.
 
 ## Development and feedback
 
@@ -160,7 +178,8 @@ Useful starting points:
 
 - [Catalog coverage](docs/catalog-coverage.md)
 - [Validation and runtime compatibility](docs/validation-compatibility.md)
-- [Packed host acceptance](docs/packed-host-acceptance.md)
+- [Native Web-host acceptance and screenshots](docs/full-host-acceptance.md)
+- [Packed SDK fixture acceptance](docs/packed-host-acceptance.md)
 - [Synthetic agent-loop walkthrough](docs/synthetic-loop.md)
 - [Recording the browser showcase](docs/showcase-recording.md)
 - [Alternatives and project scope](docs/alternatives.md)

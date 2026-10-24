@@ -7,7 +7,7 @@ Environment: isolated cloud workspace, Node 24.19.0. Synthetic data only.
 - Browser-like component tests use jsdom 26.1.0. Constructable stylesheet `replaceSync` is shimmed because jsdom lacks layout support. These tests do not certify styling, browser security boundaries or a live DSH host.
 - Vite builds produce standalone preview and plugin entries. A successful bundle is not an installation result.
 
-Outstanding before production readiness: full visual/accessibility and catalog interaction coverage; isolated DSH installation and full interaction/reload test; host permission and Code Mode behavior; complete stable-catalog and function conformance; independent security review.
+Outstanding before production readiness: full visual/accessibility and catalog interaction coverage; live-model DSH workflows beyond the bounded synthetic full-host acceptance; host permission and Code Mode behavior; complete stable-catalog and function conformance; independent security review.
 
 Commands: `npm test`, `npm run typecheck`, `npm run build`, `npm run build:plugin`.
 
@@ -16,12 +16,15 @@ Use exact source commit and observed results from a release's notes; do not trea
 ## Real-browser acceptance workflow
 
 The repository workflow uses standard GitHub-hosted Ubuntu 24.04, read-only
-contents permissions, no persisted checkout credentials and no secrets. Official
+contents permissions, no persisted checkout credentials and no real-account or
+model credentials. The separate controlled full-host experiment generated only
+explicitly authorized temporary local test credentials and verified their cleanup. Official
 checkout/setup-node actions are pinned to commit SHAs. Playwright 1.56.1 is locked;
 Chromium runs with its sandbox enabled. The test blocks requests outside loopback,
 streams synthetic data, edits a real input, clicks an action, exports the recording,
 reloads the page, restores it and checks that historical actions were not resent.
-No deployment, external model call, artifact upload or paid larger runner is used.
+No deployment, external model call or paid larger runner is used. Later reviewed
+showcase and full-host steps upload only bounded synthetic artifacts, as documented below.
 
 `npx playwright test --list` only verifies test discovery. A committed workflow is
 not proof of a passing browser run. Record the exact run URL and commit after GitHub
@@ -78,3 +81,21 @@ The validation browser scenario adds demo switching/reset and export/restore
 checks; two negative cases retain an existing valid form when an incompatible
 recording is rejected. These are runnable checks, not claims of a new passing
 Chrome or full DSH-shell run. The release's exact-commit evidence remains required.
+
+## Actual shipped Web host result
+
+[Run 40092097281](https://github.com/sunxiuguo/dsh-a2ui/actions/runs/40092097281)
+passed at `a8bb06d8acdfdc9bcffb005fd34a378ec741c312`. The official CLI installed
+the packed alpha.8 plugin into a new complete Web profile. Native authentication,
+HTTP RPC, WebSocket streaming, two sessions with overlapping surface IDs,
+editing/action-to-next-turn, controlled pre-admission rejection and explicit
+retry, native cancellation/recovery, and process restart with exact authored
+history restoration all passed. Reopening sent no historical action or model
+request. Unsent drafts intentionally reverted to authored values.
+
+Only the provider is scripted. No external model or real account was used.
+All temporary native test credentials and browser state were removed, with
+cleanup verified. Two actual shell screenshots passed independent visual/privacy
+review. See the [full scope, source, receipt and limitations](full-host-acceptance.md).
+This does not certify live models, every component/function, all failure modes,
+Code Mode, accessibility, production deployment security, adoption or revenue.

@@ -1,0 +1,70 @@
+{
+  "started": "2026-10-24T12:01:18.298Z",
+  "sourceCommit": "a8bb06d8acdfdc9bcffb005fd34a378ec741c312",
+  "syntheticProvider": true,
+  "liveModel": false,
+  "host": "official DSH 0.2.0-rc.2 CLI and Web shell",
+  "transport": "HTTP RPC + WebSocket",
+  "steps": [
+    {
+      "name": "Official CLI initializes empty Web profile without boot",
+      "observedAt": "2026-10-24T12:01:18.399Z"
+    },
+    {
+      "name": "Packed plugin installed through native CLI and discovered in profile",
+      "observedAt": "2026-10-24T12:01:21.298Z"
+    },
+    {
+      "name": "Actual native shell through real local auth, HTTP and WebSocket",
+      "observedAt": "2026-10-24T12:01:24.112Z"
+    },
+    {
+      "name": "Native preview notice and no-key provider catalog accepted without a fake key",
+      "observedAt": "2026-10-24T12:01:24.604Z"
+    },
+    {
+      "name": "First synthetic prompt observed on native session/prompt transport",
+      "observedAt": "2026-10-24T12:01:24.853Z"
+    },
+    {
+      "name": "Session A real tool render, two independent surfaces and action-to-next-turn verified",
+      "observedAt": "2026-10-24T12:01:26.510Z"
+    },
+    {
+      "name": "One native action HTTP request rejected before admission; edited fields retained and no automatic retry observed",
+      "observedAt": "2026-10-24T12:01:28.863Z"
+    },
+    {
+      "name": "Deliberate retry admitted once to Session B only; overlapping surface IDs do not leak to Session A",
+      "observedAt": "2026-10-24T12:01:29.375Z"
+    },
+    {
+      "name": "Real streamed preview remained inert; native Stop aborted provider and retired preview without a successful tool result",
+      "observedAt": "2026-10-24T12:01:30.087Z"
+    },
+    {
+      "name": "Normal action recovered after cancellation; exact synthetic canonical histories captured before graceful restart",
+      "observedAt": "2026-10-24T12:01:30.886Z"
+    },
+    {
+      "name": "Both sessions restored through native UI and HTTP history after process restart, with exact authored metadata and no replay",
+      "observedAt": "2026-10-24T12:01:36.237Z"
+    },
+    {
+      "name": "Unsent field drafts are intentionally not durable; original authored values restored while submitted action previews persist",
+      "observedAt": "2026-10-24T12:01:36.237Z"
+    }
+  ],
+  "network": {
+    "rpc": 132,
+    "mux": 2,
+    "external": 0,
+    "pageErrors": 0
+  },
+  "cleanup": true,
+  "packageSha256": "b21690d5ef7a29ec4dee3a772f3efbd27d42eced3e28433ad40ae21141e1ff6a",
+  "visualReview": "pending",
+  "nonemptyPersistenceFiles": 2,
+  "result": "PASS",
+  "finished": "2026-10-24T12:01:36.580Z"
+}
