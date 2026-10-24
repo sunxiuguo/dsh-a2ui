@@ -26,3 +26,11 @@ it('validated successful metadata settles and preserves canonical protocol docum
  const {state,match}=begin();const settled=definition.update!({state} as any,{event:{type:'tool/result',data:{message:{isError:false},meta:{kind:'dsh-a2ui/1',messages:demoMessages}}}} as any);
  expect(view(settled,match).data).toEqual({running:false,messages:demoMessages});
 });
+
+it('retired streaming starts hide the materialized host node and discard its payload',()=>{
+ const {state,match}=begin();const current=view(state,match);
+ const hidden=definition.buildViewNode!({state:undefined,key:current.key,id:current.id,start:undefined,matches:[],current:new Map([['chat',current]])} as any) as any;
+ expect(hidden).toMatchObject({key:current.key,id:current.id,kind:current.kind,target:'chat',anchorSeq:current.anchorSeq,location:current.location,visibility:'hidden',data:{messages:[],running:false}});
+ expect(hidden.data).not.toHaveProperty('error');
+ expect(definition.buildViewNode!({state:undefined,key:'new',id:'new',matches:[],current:new Map()} as any)).toBeNull();
+});

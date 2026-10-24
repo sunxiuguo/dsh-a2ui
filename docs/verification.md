@@ -52,3 +52,14 @@ value without resending historical actions. The 94 synthetic contract/unit tests
 typecheck and both builds also passed. Chrome ran with sandbox enabled.
 This is a standalone demo result, not live DSH host acceptance, full catalog
 interaction coverage, a visual audit, adoption or production-readiness proof.
+
+
+## Alpha.7 follow-path regression
+
+The packed acceptance command includes success and cancellation cases through the
+installed rc.2 history follow and client assistant-stream pipeline. It detects the
+alpha.6 stale-preview error by cancelling a real streamed provider attempt, not by
+fabricating a tool failure. The successful flow includes actual history resync;
+the cancellation flow includes resync and fresh client-binding replay. See the
+[acceptance boundary](packed-host-acceptance.md#streamed-cancellation-fixed-in-alpha7).
+These remain jsdom/local-carrier results, not a new Chrome or full-shell claim.

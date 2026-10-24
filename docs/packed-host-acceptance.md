@@ -87,7 +87,7 @@ an empty isolated profile on 2026-10-23. Dependency and bundle registration,
 Scripts remained disabled, and no compatibility exemption was added. All eight
 host peers were absent in that empty profile, so successful installation is not
 full host activation. jsdom is not a browser-rendered DSH shell. Complete DSH shell/composer
-activation, live streaming/click-to-model turns, persisted browser edits and full UI replay,
+activation, live-model/real-transport streaming and click-to-model turns, persisted browser edits and full UI replay,
 full host cancellation and production deployment remain separate acceptance
 requirements. Do not infer user adoption, full protocol coverage or revenue.
 
@@ -124,3 +124,42 @@ Only the model provider and transport bridge are scripted; the root/target and
 jsdom remain minimal fixtures. This adds an executable model-loop contract, not
 live-model access, transient streaming preview, full shell/composer, server
 SessionController/HTTP, persistence, cancellation or production certification.
+
+
+## Streamed cancellation fixed in alpha.7
+
+The earlier model-loop example forwards only durable events. It therefore misses
+an important user flow: cancelling while a partial form is already visible, before
+any `render_a2ui` tool result exists. Alpha.6 returned `null` after the official
+client retired that attempt's transient start. The actual conversation assembler
+rejected the withdrawal of an already-materialized node, and its stale preview
+remained visible. Alpha.7 follows the SDK's same-key hidden-node contract and clears
+the retired A2UI messages and running state while preserving node identity and
+position. No action is sent and no cancelled payload is retained in that node.
+
+`test:packed` now runs `scripts/verify-packed-stream.mjs` in success and cancellation
+modes against the extracted tarball. `npm run test:stream` runs the same checks
+against a built checkout. Real `SessionQueryEngine` live observations feed the
+pinned `SessionHistoryController.follow` implementation, then official
+`RemoteStream`, `SessionEventStream`, `ClientAssistantStream`, conversation assembly
+and the renderer. Neither durable events nor assistant frames are hand-authored.
+The history implementation class is loaded from its installed SDK file because it
+is not a public package export; the fixture asserts the exact rc.2 version.
+
+The success flow pauses the scripted provider before tool completion, observes a
+visible inert form, attempts a blocked preview click, allows the real tool to
+settle, edits the form, performs an actual `Session.resync`, then submits exactly
+one action into the next real agent turn. The cancelled flow confirms hidden
+same-key state with an empty payload, zero tool results/actions, an actual history
+resync, full client-binding teardown/reopen, and a second cancellation without a
+ghost form or swallowed projection error. Detached controls cannot act; the old
+preview projection is unchanged; a later valid form and explicit action still
+complete normally after both cancellations. A `BYPASS_STREAM=1` negative control
+must fail before a transient preview appears; durable-only forwarding cannot pass.
+
+The model, physical carrier and prompt/cancel admission remain synthetic/in-process.
+The root/chat target is minimal and the DOM is jsdom. The full server
+SessionController, HTTP/WebSocket, full browser shell, model credentials, network
+failure/retry behavior, network connection generation changes, cancellation
+during/after tool execution and full-host cancellation are not certified. This check
+adds no browser storage, backend drafts or automatic action replay.

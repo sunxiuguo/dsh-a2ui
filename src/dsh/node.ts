@@ -33,7 +33,12 @@ export const definition:ConversationNodeDefinition<State>={
  update:(ctx,match)=>fold(ctx.state,match),
  publication:match=>match.event.type==='assistant/live-chunk'?'animation-frame':'immediate',
  buildViewNode(ctx){
-  if(!ctx.state)return null;
+  if(!ctx.state){
+   // A cancelled live attempt retires its transient start. The host retains
+   // materialized keys, so withdraw the payload through a hidden tombstone.
+   const current=ctx.current.get('chat');
+   return current==null?null:{...current,visibility:'hidden',data:{messages:[],running:false}};
+  }
   let data:ViewData={messages:[],running:!ctx.state.finished};
   try{
    const messages=ctx.state.settled??completeMessages(ctx.state.raw);

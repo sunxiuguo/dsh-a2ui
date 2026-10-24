@@ -58,3 +58,10 @@ client receives settled session events, not transient streaming-preview frames.
 `npm run test:packed` runs the same walkthrough against the actual extracted npm
 artifact. Internally, `DSH_A2UI_PACKED_PATH` selects that artifact instead of the
 checkout's `lib` files. That does not add examples to the distributed tarball.
+
+
+For the separate transient-preview and cancellation acceptance, run
+`npm run test:stream` after the plugin build. Unlike this walkthrough, that fixture
+uses the official history follow and client assistant-stream pipeline. Its
+[exact boundary and alpha.7 regression](packed-host-acceptance.md#streamed-cancellation-fixed-in-alpha7)
+remain narrower than a full DSH shell or network transport.
