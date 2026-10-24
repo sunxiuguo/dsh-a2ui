@@ -96,3 +96,9 @@ requirements. Do not infer user adoption, full protocol coverage or revenue.
 A rejected action previously replaced the entire host form with an error, leaving the user unable to inspect or resubmit their edited values. The packed, official two-session UI fixture reproduces that failure on alpha.3. Alpha.4 displays the delivery status inside the existing surface instead: edited values remain available, no automatic retry occurs, and a deliberate second click routes the retained value only to the owning session. A confirmed subsequent send clears the error; the other session is unchanged.
 
 This is in-memory recovery after a rejected send, not durable draft storage. Unconfirmed delivery can be ambiguous: users should check the conversation before sending again. The fixture uses a synthetic remote rejection and acceptance, not a live model or network-failure guarantee.
+
+## Model ownership fixed in alpha.5
+
+The official renderer stores data-model values by reference. Passing host message objects directly to it allowed form edits to rewrite the canonical host projection, and two surfaces given the same input could share mutable state. Later model updates within one batch could also rewrite an earlier history entry before it was recorded. Alpha.5 takes independent copies for authored history and renderer state before processing the batch.
+
+The packed official-slot test now asserts that editing a field leaves the host node messages unchanged. Renderer tests cover shared-input session isolation, caller mutation after append, ordered authored updates versus final snapshots, and unchanged imported recordings after editing the restored surface. No localStorage, IndexedDB, network draft write, or automatic action replay is introduced. This fixes ownership, not draft survival across node reconstruction or browser reload.

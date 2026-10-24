@@ -42,6 +42,8 @@ it('renders the packed client in actual DSH slots and routes actions through the
   expect(JSON.parse(prompts[0].content[0].text.split('\n')[1]).action).toMatchObject({name:'request_preview',surfaceId:'synthetic-workshop',context:{topic:'Ceramics for beginners'}});
   const sessionA=within(container).getByRole('article',{name:'synthetic-A'});
   await act(async()=>{fireEvent.input(within(sessionA).getByRole('textbox'),{target:{value:'Hand-built pottery'}});});
+  // Renderer-owned drafts must not rewrite the canonical host event projection.
+  expect(nodes.get('synthetic-A').data.messages.find((m:any)=>m.updateDataModel).updateDataModel.value.topic).toBe('Ceramics for beginners');
   rejectNext=true;
   await act(async()=>{fireEvent.click(within(within(container).getByRole('article',{name:'synthetic-A'})).getByRole('button',{name:'Preview request'}));});
   await waitFor(()=>expect(prompts).toHaveLength(2));expect(prompts[1].sessionId).toBe('synthetic-A');

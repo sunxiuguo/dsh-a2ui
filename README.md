@@ -2,7 +2,7 @@
 
 An independent, protocol-first A2UI integration for DeepSeek Harness.
 
-**Status: 0.1.0-alpha.4, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
+**Status: 0.1.0-alpha.5, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
 
 ## What you can run today
 
@@ -26,6 +26,7 @@ The example is synthetic. It performs no booking, payment, external request, mod
 - Incremental JSONL decoder and DSH streaming tool-argument extraction.
 - DSH `render_a2ui` tool saves validated messages in presentation metadata, with a dedicated conversation node and renderer.
 - Interactive actions return to the owning DSH conversation as an explicitly labelled data message. Delivery failure is visible and is not automatically retried. Alpha.4 keeps the edited form available after a rejected send. Check the conversation before deliberately submitting again, because an unconfirmed response does not prove the server did nothing.
+- Alpha.5 isolates renderer-owned mutable models from host-authored messages and other surfaces sharing the same input. Editing a form does not rewrite its source history; snapshots carry the edits.
 - Portable recording export includes current field state in a separately bounded snapshot section, so a full 512-message history remains exportable. Import restores UI messages only; recorded actions are historical evidence and never execute during replay.
 
 ## DSH installation boundary

@@ -47,8 +47,11 @@ export class SurfaceSession {
   }
   append(messages:Message[],complete=false) {
     validateDocument([...this.messages,...messages],complete);
-    this.processor.processMessages(messages);
-    this.messages.push(...structuredClone(messages));
+    // The official renderer owns mutable data models. Never lend it caller or
+    // authored-history objects: edits must live only in renderer snapshots.
+    const authored=structuredClone(messages);
+    this.processor.processMessages(structuredClone(authored));
+    this.messages.push(...authored);
   }
   export():Recording {
     const snapshots:Message[]=[];
