@@ -36,7 +36,10 @@ are enabled by permitting literal metadata.
 
 The official evaluator catches an execution denial and emits an expression error;
 formatted output can be empty. This is not necessarily an atomic document/import
-rejection or a `SurfaceSession.lastError` alert. It does not abort an enclosing
+rejection or a `SurfaceSession.lastError` delivery error. A separate per-surface
+runtime notice reports that an error was observed, without showing raw error
+payloads or expression text. The notice is explicitly dismissible; dismissal
+does not confirm recovery. It does not abort an enclosing
 ordinary event: a denied nested expression may produce an empty/undefined value
 while that event proceeds. No claim of atomic expression failure is made. Static prohibited expressions
 continue to fail the earlier policy check. Benign formatting can recover after a

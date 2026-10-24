@@ -1,5 +1,5 @@
 import React, {useEffect,useMemo,useState} from 'react';
-import {MessageProcessor} from '@a2ui/web_core/v0_9';
+import {MessageProcessor,type SurfaceModel,type Subscription} from '@a2ui/web_core/v0_9';
 import {setMarkdownRenderer} from '@a2ui/web_core/v0_9/basic_catalog';
 import {renderMarkdown} from '@a2ui/markdown-it';
 import {A2uiSurface,type ReactCatalogComponent} from '@a2ui/react/v0_9';
@@ -26,6 +26,36 @@ export class SurfaceSession {
   private messages:Message[]=[];
   lastError:string|null=null;
   private statusListeners=new Set<()=>void>();
+  // One bit per active surface (at most eight under document validation), not
+  // an error history. Never retain or display the runtime's untrusted payload.
+  private runtimeStates=new Map<string,{surface:SurfaceModel<ReactCatalogComponent>;observed:boolean;subscription:Subscription}>();
+  private lifecycleSubscriptions:Subscription[]=[];
+  private runtimeStatusQueued=false;
+  private disposed=false;
+  hasRuntimeWarning(surfaceId:string):boolean {
+    const state=this.runtimeStates.get(surfaceId);
+    return !!state?.observed&&this.processor.model.surfacesMap.get(surfaceId)===state.surface;
+  }
+  dismissRuntimeWarning(surfaceId:string):void {
+    const state=this.runtimeStates.get(surfaceId);
+    if(!state?.observed)return;
+    state.observed=false;this.notifyRuntimeStatus();
+  }
+  private notifyRuntimeStatus(){
+    // A binder can emit during React render. Coalesce notices and notify after
+    // that render rather than updating a different component while it renders.
+    if(this.disposed||this.runtimeStatusQueued)return;
+    this.runtimeStatusQueued=true;
+    queueMicrotask(()=>{
+      this.runtimeStatusQueued=false;
+      if(!this.disposed)for(const listener of this.statusListeners)listener();
+    });
+  }
+  private observeRuntimeError(surface:SurfaceModel<ReactCatalogComponent>){
+    const state=this.runtimeStates.get(surface.id);
+    if(this.disposed||state?.surface!==surface||this.processor.model.surfacesMap.get(surface.id)!==surface||state.observed)return;
+    state.observed=true;this.notifyRuntimeStatus();
+  }
   subscribeStatus(listener:()=>void){this.statusListeners.add(listener);return()=>{this.statusListeners.delete(listener);};}
   constructor(private send:(action:Message)=>Promise<void>=async()=>{},private canSend=true) {
     this.processor=new MessageProcessor<ReactCatalogComponent>([rendererCatalog],async(action:ActionPayload)=>{
@@ -45,6 +75,21 @@ export class SurfaceSession {
       }catch(error){this.lastError=error instanceof Error?error.message:'Action delivery was not confirmed';}
       for(const listener of this.statusListeners)listener();
     });
+    // Register before append/restore and before any renderer can evaluate a
+    // binding. These public hooks precede SurfaceView's later subscriptions.
+    this.lifecycleSubscriptions=[this.processor.onSurfaceCreated(surface=>{
+      if(this.disposed||this.processor.model.surfacesMap.get(surface.id)!==surface)return;
+      const previous=this.runtimeStates.get(surface.id);
+      previous?.subscription.unsubscribe();
+      this.runtimeStates.set(surface.id,{surface,observed:false,subscription:surface.onError.subscribe(()=>this.observeRuntimeError(surface))});
+      if(previous?.observed)this.notifyRuntimeStatus();
+    }),this.processor.onSurfaceDeleted(id=>{
+      const state=this.runtimeStates.get(id);
+      // A delayed deletion for an old instance must not clear its replacement.
+      if(!state||this.processor.model.surfacesMap.get(id)===state.surface)return;
+      state.subscription.unsubscribe();this.runtimeStates.delete(id);
+      if(state.observed)this.notifyRuntimeStatus();
+    })];
   }
   append(messages:Message[],complete=false) {
     validateDocument([...this.messages,...messages],complete);
@@ -70,7 +115,13 @@ export class SurfaceSession {
     this.actionAttempts=checked.actions.length;
     this.reservedActionBytes=new TextEncoder().encode(JSON.stringify(checked.actions)).length;
   }
-  dispose(){this.canSend=false;this.statusListeners.clear();this.processor.dispose();}
+  dispose(){
+    this.disposed=true;this.canSend=false;
+    this.lifecycleSubscriptions.forEach(subscription=>subscription.unsubscribe());
+    this.lifecycleSubscriptions=[];
+    for(const state of this.runtimeStates.values())state.subscription.unsubscribe();
+    this.runtimeStates.clear();this.statusListeners.clear();this.processor.dispose();
+  }
 }
 export function SurfaceView({session}:{session:SurfaceSession}) {
   const [,refresh]=useState(0);
@@ -80,7 +131,16 @@ export function SurfaceView({session}:{session:SurfaceSession}) {
     const stop=session.subscribeStatus(sync);
     sync();return()=>{a.unsubscribe();b.unsubscribe();stop();};
   },[session]);
-  return <div className="a2ui-container">{session.lastError&&<p role="alert">{session.lastError}</p>}{Array.from(session.processor.model.surfacesMap.values()).map(surface=><A2uiSurface key={surface.id} surface={surface}/>)}</div>;
+  return <div className="a2ui-container">
+    {session.lastError&&<p role="alert">{session.lastError}</p>}
+    {Array.from(session.processor.model.surfacesMap.values()).map(surface=><React.Fragment key={surface.id}>
+      {session.hasRuntimeWarning(surface.id)&&<div role="alert">
+        <p>Runtime warning observed. Some content may be unavailable. Dismissing this notice does not confirm recovery.</p>
+        <button type="button" onClick={()=>session.dismissRuntimeWarning(surface.id)}>Dismiss runtime warning</button>
+      </div>}
+      <A2uiSurface surface={surface}/>
+    </React.Fragment>)}
+  </div>;
 }
 export function DocumentSurface({messages,send}:{messages:Message[];send:(action:Message)=>Promise<void>}) {
   const session=useMemo(()=>{const s=new SurfaceSession(send);s.append(messages,true);return s;},[messages,send]);

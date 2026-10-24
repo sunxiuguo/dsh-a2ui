@@ -155,10 +155,13 @@ describe.each(['v0.9','v0.9.1'])('%s literal data versus authored evaluator inpu
   expect(()=>recording(form(version),[],[{version,updateDataModel:{surfaceId:id,path:'/',value:data}}])).toThrow(error);
  });
 
- it('denies the actual capability through direct public invoker and evaluator without reaching original navigation',()=>{
+ it('denies the actual capability through direct public invoker and evaluator without reaching original navigation',async()=>{
   const session=new SurfaceSession();session.append(form(version),true);const s=surface(session),ctx=new DataContext(s,'/'),errors:Message[]=[];s.onError.subscribe(e=>{errors.push(e);});
   try{expect(()=>s.defaultCatalog!.invoker('openUrl',{url},ctx)).toThrow('POLICY_NAVIGATION');
-   expect(ctx.resolveDynamicValue(nav)).toBeUndefined();expect(denied).toHaveBeenCalledTimes(2);expect(errors).toEqual([expect.objectContaining({code:'EXPRESSION_ERROR',expression:'openUrl',message:'POLICY_NAVIGATION: openUrl disabled'})]);
+   expect(ctx.resolveDynamicValue(nav)).toBeUndefined();expect(denied).toHaveBeenCalledTimes(2);
+   // The official EventEmitter awaits each listener. SurfaceSession observes
+   // first; external diagnostic observers can run in a later microtask.
+   await vi.waitFor(()=>expect(errors).toEqual([expect.objectContaining({code:'EXPRESSION_ERROR',expression:'openUrl',message:'POLICY_NAVIGATION: openUrl disabled'})]));
   }finally{session.dispose();}
  });
  it.each([
@@ -167,11 +170,11 @@ describe.each(['v0.9','v0.9.1'])('%s literal data versus authored evaluator inpu
   ['nested argument','${required(value: openUrl(url: "'+url+'"))}'],
   ['nested interpolation','${${openUrl(url: "'+url+'")}}'],
   ['nested formatString','${formatString(value: \'${openUrl(url: "'+url+'\")}\')}'],
- ])('denies %s formatString-derived navigation at Text binder evaluation, not append validation',(_label,value)=>{
+ ])('denies %s formatString-derived navigation at Text binder evaluation, not append validation',async(_label,value)=>{
   const messages=form(version);messages[1].updateDataModel.value.template=template;messages[2].updateComponents.components[4].text=format(value);
   const session=new SurfaceSession();expect(()=>session.append(messages,true)).not.toThrow();const s=surface(session),errors:Message[]=[];s.onError.subscribe(e=>{errors.push(e);});
   const text=binder(s,'submit-label',TextApi);
-  try{expect(typeof text.snapshot.text).toBe('string');expect(denied).toHaveBeenCalled();expect(errors).toContainEqual(expect.objectContaining({code:'EXPRESSION_ERROR',expression:'openUrl',message:'POLICY_NAVIGATION: openUrl disabled'}));}
+  try{expect(typeof text.snapshot.text).toBe('string');expect(denied).toHaveBeenCalled();await vi.waitFor(()=>expect(errors).toContainEqual(expect.objectContaining({code:'EXPRESSION_ERROR',expression:'openUrl',message:'POLICY_NAVIGATION: openUrl disabled'})));}
   finally{text.dispose();session.dispose();}
  });
  it('denies lazy action-time formatString and preserves unrelated literal context data',async()=>{
@@ -181,22 +184,23 @@ describe.each(['v0.9','v0.9.1'])('%s literal data versus authored evaluator inpu
    expect(sent[0].action.context).toEqual({selection:metadata,result:''});
   }finally{submit.dispose();session.dispose();}
  });
- it.each(['append','binder edit'])('denies reactive formatString after %s and recovers on harmless data',mode=>{
+ it.each(['append','binder edit'])('denies reactive formatString after %s and recovers on harmless data',async mode=>{
   const messages=form(version);messages[2].updateComponents.components[4].text=format({path:'/template'});messages[2].updateComponents.components[1].value={path:'/template'};
   const session=new SurfaceSession();session.append(messages,true);const s=surface(session),errors:Message[]=[];s.onError.subscribe(e=>{errors.push(e);});const text=binder(s,'submit-label',TextApi),field=binder(s,'component-field',TextFieldApi);
   try{expect(text.snapshot.text).toBe('Hello Synthetic');expect(denied).not.toHaveBeenCalled();
    if(mode==='append')expect(()=>session.append([{version,updateDataModel:{surfaceId:id,path:'/template',value:template}}])).not.toThrow();else field.snapshot.setValue(template);
-   expect(text.snapshot.text).toBe('');expect(denied).toHaveBeenCalled();expect(errors.some(e=>e.message.includes('POLICY_NAVIGATION'))).toBe(true);
+   expect(text.snapshot.text).toBe('');expect(denied).toHaveBeenCalled();await vi.waitFor(()=>expect(errors.some(e=>e.message.includes('POLICY_NAVIGATION'))).toBe(true));
    field.snapshot.setValue('Recovered ${required(value: "")}');expect(text.snapshot.text).toBe('Recovered false');
   }finally{text.dispose();field.dispose();session.dispose();}
  });
- it('denies lazy signal evaluation and snapshot restoration while never resending historical actions',()=>{
+ it('denies restored-snapshot evaluation through the creation observer and a lazy signal without resending historical actions',async()=>{
   const messages=form(version);const snapshots=[{version,updateDataModel:{surfaceId:id,path:'/',value:{template,nested,selection:metadata}}}];const saved=importRecording(JSON.stringify(recording(messages,[action(version,{selection:metadata,nested})],snapshots)));
   const sent=vi.fn(async()=>{}),session=new SurfaceSession(sent);const subscriptions:Array<{unsubscribe():void}>=[];const errors:Message[]=[];
-  // Install the public reactive binding on surface creation so snapshot replay
-  // updates an already-subscribed evaluator, not just a later explicit read.
+  // Install the public reactive binding through surface creation. The emitter
+  // awaits earlier listeners, so this observer may run after restore applies
+  // its snapshots; wait for its actual subscription and error delivery.
   const created=session.processor.onSurfaceCreated(s=>{s.onError.subscribe(e=>{errors.push(e);});subscriptions.push(new DataContext(s,'/').subscribeDynamicValue(format({path:'/template'}),()=>{}));});
-  try{expect(()=>session.restore(saved)).not.toThrow();expect(denied).toHaveBeenCalled();expect(errors.some(e=>e.message.includes('POLICY_NAVIGATION'))).toBe(true);expect(sent).not.toHaveBeenCalled();expect(session.actions).toEqual(saved.actions);
+  try{expect(()=>session.restore(saved)).not.toThrow();await vi.waitFor(()=>{expect(subscriptions).toHaveLength(1);expect(denied).toHaveBeenCalled();expect(errors.some(e=>e.message.includes('POLICY_NAVIGATION'))).toBe(true);});expect(sent).not.toHaveBeenCalled();expect(session.actions).toEqual(saved.actions);
    const before=denied.mock.calls.length;const signal=new DataContext(surface(session),'/').resolveSignal([format({path:'/template'})]);expect(getValue(signal)).toEqual(['']);expect(denied.mock.calls.length).toBeGreaterThan(before);signal.unsubscribe?.();
   }finally{created.unsubscribe();subscriptions.forEach(s=>s.unsubscribe());session.dispose();}
  });
