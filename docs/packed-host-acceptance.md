@@ -64,10 +64,29 @@ Observed 2026-10-23: old alpha.1 artifact fails this real loader path; corrected
 artifact passes. The same checks are now part of the existing CI acceptance job.
 The server-only proof originally landed at `f5d01c6`; this expands its boundary.
 
+## Durable tool-result acceptance
+
+`test:packed` also executes the packed server against the official rc.2 JSONL
+backend with `compression: none` and synthetic data. Each of two sessions uses a
+complete v4 turn/step/assistant-tool-call lifecycle, real ToolRuntime success and
+failure, and `SessionStore.flush`. After closing writers and disposing the first
+Context, a fresh backend reads the disk files; official `Session.fromRestore`
+retains the canonical A2UI metadata and assistant/tool history. Failed calls have
+no successful metadata and A/B surface IDs remain distinct.
+
+The assistant tool-call messages are synthetic, not model responses. This checks
+plaintext durable tool-result metadata, not persistence of edited browser fields,
+full chat replay, process crash recovery, cross-process restart or default Zstd.
+
 ## Still unverified
 
-This is not a real DSH CLI or package-manager install. Profile placement
-is synthetic and jsdom is not a browser-rendered DSH shell. Complete DSH shell/composer
-activation, live streaming/click-to-model turns, session persistence,
+The automated profile fixture uses synthetic package placement. Separately, the
+official DSH 0.2.0-rc.2 CLI and pnpm 11.25.0 installed the alpha.3 tarball into
+an empty isolated profile on 2026-10-23. Dependency and bundle registration,
+`plugin list`, package bytes and lock integrity were checked independently.
+Scripts remained disabled, and no compatibility exemption was added. All eight
+host peers were absent in that empty profile, so successful installation is not
+full host activation. jsdom is not a browser-rendered DSH shell. Complete DSH shell/composer
+activation, live streaming/click-to-model turns, persisted browser edits and full UI replay,
 full host cancellation and production deployment remain separate acceptance
 requirements. Do not infer user adoption, full protocol coverage or revenue.
