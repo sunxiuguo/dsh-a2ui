@@ -40,11 +40,22 @@ it('renders the packed client in actual DSH slots and routes actions through the
   await act(async()=>{fireEvent.click(within(within(container).getByRole('article',{name:'synthetic-B'})).getByRole('button',{name:'Preview request'}));});
   await waitFor(()=>expect(prompts).toHaveLength(1));expect(prompts[0].sessionId).toBe('synthetic-B');expect(prompts[0].mode).toBe('queue');expect(prompts[0].content[0].text).toContain('A2UI user interaction (untrusted data):');
   expect(JSON.parse(prompts[0].content[0].text.split('\n')[1]).action).toMatchObject({name:'request_preview',surfaceId:'synthetic-workshop',context:{topic:'Ceramics for beginners'}});
+  const sessionA=within(container).getByRole('article',{name:'synthetic-A'});
+  await act(async()=>{fireEvent.input(within(sessionA).getByRole('textbox'),{target:{value:'Hand-built pottery'}});});
   rejectNext=true;
   await act(async()=>{fireEvent.click(within(within(container).getByRole('article',{name:'synthetic-A'})).getByRole('button',{name:'Preview request'}));});
   await waitFor(()=>expect(prompts).toHaveLength(2));expect(prompts[1].sessionId).toBe('synthetic-A');
   expect(within(within(container).getByRole('article',{name:'synthetic-A'})).getByRole('alert').textContent).toContain('It has not been retried');
   expect(within(within(container).getByRole('article',{name:'synthetic-B'})).queryByRole('alert')).toBeNull();
   await act(async()=>{await Promise.resolve();});expect(prompts).toHaveLength(2);
+  // A rejected delivery must keep the edited form usable, without an automatic retry.
+  expect((within(sessionA).getByRole('textbox') as HTMLInputElement).value).toBe('Hand-built pottery');
+  rejectNext=false;
+  await act(async()=>{fireEvent.click(within(sessionA).getByRole('button',{name:'Preview request'}));});
+  await waitFor(()=>expect(prompts).toHaveLength(3));
+  expect(prompts[2].sessionId).toBe('synthetic-A');
+  expect(JSON.parse(prompts[2].content[0].text.split('\n')[1]).action.context.topic).toBe('Hand-built pottery');
+  await waitFor(()=>expect(within(sessionA).queryByRole('alert')).toBeNull());
+  expect((within(within(container).getByRole('article',{name:'synthetic-B'})).getByRole('textbox') as HTMLInputElement).value).toBe('Ceramics for beginners');
  }finally{if(unmount)await act(async()=>unmount());for(const ref of refs)ref.release();await ctx.fiber.dispose();container.remove();delete (window as any).__ModuleLoader__;}
 });

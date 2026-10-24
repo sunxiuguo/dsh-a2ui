@@ -90,3 +90,9 @@ full host activation. jsdom is not a browser-rendered DSH shell. Complete DSH sh
 activation, live streaming/click-to-model turns, persisted browser edits and full UI replay,
 full host cancellation and production deployment remain separate acceptance
 requirements. Do not infer user adoption, full protocol coverage or revenue.
+
+## Regression fixed in alpha.4
+
+A rejected action previously replaced the entire host form with an error, leaving the user unable to inspect or resubmit their edited values. The packed, official two-session UI fixture reproduces that failure on alpha.3. Alpha.4 displays the delivery status inside the existing surface instead: edited values remain available, no automatic retry occurs, and a deliberate second click routes the retained value only to the owning session. A confirmed subsequent send clears the error; the other session is unchanged.
+
+This is in-memory recovery after a rejected send, not durable draft storage. Unconfirmed delivery can be ambiguous: users should check the conversation before sending again. The fixture uses a synthetic remote rejection and acceptance, not a live model or network-failure guarantee.

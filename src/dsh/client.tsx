@@ -1,4 +1,4 @@
-import React,{useMemo,useEffect,useState,useCallback} from 'react';
+import React,{useMemo,useEffect,useCallback} from 'react';
 import type {Context} from '@deepseek-ai/cordis';
 import type {SessionId} from '@deepseek-ai/dsh-session/types';
 import type {} from '@deepseek-ai/dsh-api-session-controller/client';
@@ -13,11 +13,10 @@ export const inject=['uiConversation','slots','sessions'];
 interface Injected {send:(action:Message)=>Promise<void>}
 function ClientSurface({node,send}:Pick<ChatNodeViewProps<'a2ui-document'>,'node'>&Injected){
  const data=node.data;
- const [error,setError]=useState('');
- const onAction=useCallback(async(action:Message)=>{try{await send(action);setError('');}catch{setError('Action was not confirmed by DSH. It has not been retried.');throw new Error('Action delivery failed');}},[send]);
+ const onAction=useCallback(async(action:Message)=>{try{await send(action);}catch{throw new Error('Action was not confirmed by DSH. It has not been retried. Check the conversation before trying again.');}},[send]);
  const session=useMemo(()=>{const s=new SurfaceSession(onAction,!data.running);if(data.messages.length)s.append(data.messages,!data.running);return s;},[data.messages,onAction,data.running]);
  useEffect(()=>()=>session.dispose(),[session]);
- return <section aria-label="A2UI document"><small>{data.running?'A2UI preview. Interaction is disabled until final validation.':'Agent-generated A2UI. Review before interacting.'}</small>{data.error||error?<p role="alert">{data.error||error}</p>:<div {...(data.running?{inert:''}:{})} aria-disabled={data.running}><SurfaceView session={session}/></div>}</section>;
+ return <section aria-label="A2UI document"><small>{data.running?'A2UI preview. Interaction is disabled until final validation.':'Agent-generated A2UI. Review before interacting.'}</small>{data.error?<p role="alert">{data.error}</p>:<div {...(data.running?{inert:''}:{})} aria-disabled={data.running}><SurfaceView session={session}/></div>}</section>;
 }
 export function apply(ctx:Context){
  ctx.uiConversation.events.register(definition);
