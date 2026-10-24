@@ -2,7 +2,7 @@
 
 An independent, protocol-first A2UI integration for DeepSeek Harness.
 
-**Status: 0.1.0-alpha.7, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
+**Status: 0.1.0-alpha.8, development preview.** This is an additional project, not a replacement for DSH GenUI. Our direction is complete, interoperable mainstream-protocol support. The first milestone validates a bounded A2UI workflow, not the whole standard or production DSH deployment.
 
 ## What you can run today
 
@@ -17,6 +17,20 @@ npm run dev
 Open the local URL printed by Vite. Click **Stream synthetic example**, edit the workshop topic, and click **Preview request**. The official renderer emits a standard action envelope into the demo log. Export the recording, restore it, and verify the edited value is retained while historical actions are **not** sent again.
 
 The example is synthetic. It performs no booking, payment, external request, model call, or customer-data access. No account or API key is needed. The standalone demo's action sink is a local log, not a live DSH session.
+
+## Form validation you can inspect
+
+Click **Stream validation example** for a synthetic code field. Enter `bad` to see
+an explicit error and disabled preview button, then `CD34` to enable it. The button
+writes only to the local action log. Export/restore retains the edited value and
+never resends its historical action. The [runnable fixture and compatibility
+policy](docs/validation-compatibility.md) explain the standard `checks` + `regex`
+function and why Button gating must be explicit.
+
+Alpha.8 rejects `TextField.validationRegexp` with a `COMPATIBILITY` error, including
+an empty string or its use alongside `checks`. This is a valid official property
+that the pinned 0.14.0 runtime ignores, not invalid A2UI. No schema or message is
+rewritten. Full basic-catalog support remains unfinished.
 
 ## Follow a form action into the next agent turn
 

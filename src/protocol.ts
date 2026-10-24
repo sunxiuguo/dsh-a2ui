@@ -35,6 +35,13 @@ function inspect(value:unknown, depth=0):void {
 export function validateMessage(value:unknown):asserts value is Message {
   inspect(value);
   if(!server(value)) throw new Error('SCHEMA: '+ajv.errorsText(server.errors));
+  // This property is valid A2UI, but the pinned official renderer ignores it.
+  // Inspect only schema-validated component definitions, never arbitrary model data.
+  for(const component of (value as Message).updateComponents?.components??[]) {
+    if(component.component==='TextField' && Object.hasOwn(component,'validationRegexp')) {
+      throw new Error('COMPATIBILITY: TextField.validationRegexp is not implemented by the pinned @a2ui/web_core 0.14.0 runtime. Author explicit checks with the regex function instead; gate Button separately if needed.');
+    }
+  }
   if((value as Message).createSurface?.catalogId && (value as Message).createSurface.catalogId!==CATALOG_ID) throw new Error('CATALOG: unsupported catalog');
 }
 export function validateAction(value:unknown):asserts value is Message {

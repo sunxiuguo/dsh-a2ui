@@ -65,3 +65,19 @@ keyboard/focus accessibility or Escape-key support. The control scenario also
 asserts the restored ChoicePicker's visible radio selection, not only stored data.
 These additional assertions require their own successful exact-commit browser CI;
 test discovery alone is not acceptance.
+
+
+## Explicit validation compatibility boundary (alpha.8)
+
+`TextField.validationRegexp` is valid in the unchanged pinned official schema,
+but the 0.14.0 runtime does not execute it. The bridge now rejects that property
+with `COMPATIBILITY`, after schema validation, instead of accepting a validation
+rule that will be ignored. This includes empty strings and definitions that also
+provide `checks`. The rule does not apply to ordinary model data or action context
+with the same property name. It is a temporary runtime boundary, not a standard
+restriction, schema removal, automatic conversion or completed catalog coverage.
+
+The [validation example](validation-compatibility.md) uses author-supplied
+`checks` with the standard `regex` function on both TextField and Button. Tests
+exercise bad → good → bad model changes, resolved action values, export/restore,
+and the negative control that field checks alone do not disable another Button.

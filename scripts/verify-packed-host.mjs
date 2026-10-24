@@ -28,6 +28,15 @@ const run=(args,signal=new AbortController().signal)=>ctx.tools.execute({callId:
  const result=await run({messages});assert.equal(result.isError,false,JSON.stringify(result));assert.deepEqual(result.meta.messages,messages);assert.equal(result.meta.kind,'dsh-a2ui/1');assert.ok(Object.isFrozen(result));assert.ok(Object.isFrozen(result.meta));assert.ok(Object.isFrozen(result.meta.messages));assert.ok(Object.isFrozen(result.meta.messages[0].createSurface));checks.push('real pipeline validates output and materializes frozen presentation metadata');
  assert.match(JSON.stringify(result.content),/does not confirm display/);checks.push('text fallback does not claim browser display');
  const invalid=await run({messages:[]});assert.equal(invalid.isError,true);assert.equal(invalid.meta,undefined);checks.push('invalid document has no successful presentation metadata');
+ for(const version of ['v0.9','v0.9.1']){
+  for(const validationRegexp of ['', '^[A-Z]{2}[0-9]{2}$']){
+   const incompatible=[{...messages[0],version},{version,updateComponents:{surfaceId:'synthetic-host',components:[{id:'root',component:'TextField',label:'Synthetic',value:'AB12',validationRegexp}]}}];
+   const rejected=await run({messages:incompatible});assert.equal(rejected.isError,true);assert.equal(rejected.meta,undefined);assert.match(JSON.stringify(rejected),/COMPATIBILITY: TextField.validationRegexp/);
+  }
+  const fixture=JSON.parse(readFileSync(new URL('../demo/validation-fixture.json',import.meta.url),'utf8')).map(message=>({...message,version}));
+  const checked=await run({messages:fixture});assert.equal(checked.isError,false,JSON.stringify(checked));assert.deepEqual(checked.meta.messages,fixture);
+ }
+ checks.push('both envelope versions reject ignored validationRegexp (including empty) without metadata and accept explicit checks unchanged');
  const abort=new AbortController();abort.abort();const cancelled=await run({messages},abort.signal);assert.equal(cancelled.isError,true);assert.equal(cancelled.meta,undefined);assert.equal(cancelled.error.info.code,'ABORTED_BEFORE_DISPATCH');checks.push('pre-dispatch cancellation has no successful presentation metadata');
  await mounted.dispose();assert.equal(ctx.tools.get('render_a2ui'),undefined);const removed=await run({messages});assert.equal(removed.isError,true);assert.equal(removed.error.info.code,'UNKNOWN_TOOL');checks.push('plugin unload removes registered tool and dispatch rejects');
  const remount=ctx.plugin(plugin);await remount;assert.equal((await run({messages})).isError,false);checks.push('remount restores real pipeline');

@@ -1,0 +1,93 @@
+[
+  {
+    "version": "v0.9.1",
+    "createSurface": {
+      "surfaceId": "synthetic-validation",
+      "catalogId": "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json"
+    }
+  },
+  {
+    "version": "v0.9.1",
+    "updateDataModel": {
+      "surfaceId": "synthetic-validation",
+      "path": "/",
+      "value": {
+        "code": "AB12"
+      }
+    }
+  },
+  {
+    "version": "v0.9.1",
+    "updateComponents": {
+      "surfaceId": "synthetic-validation",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "code",
+            "submit"
+          ]
+        },
+        {
+          "id": "code",
+          "component": "TextField",
+          "label": "Synthetic code",
+          "value": {
+            "path": "/code"
+          },
+          "checks": [
+            {
+              "condition": {
+                "call": "regex",
+                "args": {
+                  "value": {
+                    "path": "/code"
+                  },
+                  "pattern": "^[A-Z]{2}[0-9]{2}$"
+                },
+                "returnType": "boolean"
+              },
+              "message": "Use two uppercase letters followed by two digits"
+            }
+          ]
+        },
+        {
+          "id": "label",
+          "component": "Text",
+          "text": "Preview valid code"
+        },
+        {
+          "id": "submit",
+          "component": "Button",
+          "child": "label",
+          "checks": [
+            {
+              "condition": {
+                "call": "regex",
+                "args": {
+                  "value": {
+                    "path": "/code"
+                  },
+                  "pattern": "^[A-Z]{2}[0-9]{2}$"
+                },
+                "returnType": "boolean"
+              },
+              "message": "Use two uppercase letters followed by two digits"
+            }
+          ],
+          "action": {
+            "event": {
+              "name": "preview_valid_code",
+              "context": {
+                "code": {
+                  "path": "/code"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]

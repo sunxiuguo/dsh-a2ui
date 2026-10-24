@@ -63,3 +63,18 @@ fabricating a tool failure. The successful flow includes actual history resync;
 the cancellation flow includes resync and fresh client-binding replay. See the
 [acceptance boundary](packed-host-acceptance.md#streamed-cancellation-fixed-in-alpha7).
 These remain jsdom/local-carrier results, not a new Chrome or full-shell claim.
+
+## Alpha.8 validation compatibility regression
+
+The compatibility tests distinguish a valid official `validationRegexp` property
+from a currently unsupported runtime behavior. Both envelope versions reject it
+before renderer mutation, while unchanged author-supplied `checks.regex` validates
+the field and independently gates its Button. Coverage includes JSONL, the SDK
+tool, preview/final node projection, old recording rejection and positive replay.
+The packed server acceptance also checks both versions through the actual
+ToolRuntime, including absence of presentation metadata for rejected documents.
+
+The validation browser scenario adds demo switching/reset and export/restore
+checks; two negative cases retain an existing valid form when an incompatible
+recording is rejected. These are runnable checks, not claims of a new passing
+Chrome or full DSH-shell run. The release's exact-commit evidence remains required.
