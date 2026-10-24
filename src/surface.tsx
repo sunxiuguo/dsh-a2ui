@@ -1,11 +1,12 @@
 import React, {useEffect,useMemo,useState} from 'react';
 import {MessageProcessor} from '@a2ui/web_core/v0_9';
-import {basicCatalog,setMarkdownRenderer} from '@a2ui/web_core/v0_9/basic_catalog';
+import {setMarkdownRenderer} from '@a2ui/web_core/v0_9/basic_catalog';
 import {renderMarkdown} from '@a2ui/markdown-it';
 import {A2uiSurface,type ReactCatalogComponent} from '@a2ui/react/v0_9';
 import type {ActionPayload} from '@a2ui/web_core';
 import {validateAction,validateDocument,MAX_ACTIONS,MAX_ACTION_HISTORY_BYTES,type Message} from './protocol';
 import {recording,type Recording} from './replay';
+import {rendererCatalog} from './catalog';
 
 // Keep the initial preview offline: sanitized Markdown is retained, while
 // links/media cannot navigate or load remote content from untrusted text.
@@ -27,7 +28,7 @@ export class SurfaceSession {
   private statusListeners=new Set<()=>void>();
   subscribeStatus(listener:()=>void){this.statusListeners.add(listener);return()=>{this.statusListeners.delete(listener);};}
   constructor(private send:(action:Message)=>Promise<void>=async()=>{},private canSend=true) {
-    this.processor=new MessageProcessor<ReactCatalogComponent>([basicCatalog],async(action:ActionPayload)=>{
+    this.processor=new MessageProcessor<ReactCatalogComponent>([rendererCatalog],async(action:ActionPayload)=>{
       try{
       if(!this.canSend)throw new Error('ACTION_PENDING: wait for final document validation');
       const version=[...this.messages].reverse().find(m=>m.createSurface?.surfaceId===action.surfaceId)?.version;

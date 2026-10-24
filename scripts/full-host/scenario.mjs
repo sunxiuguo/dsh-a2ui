@@ -6,8 +6,8 @@ import {COMPOSER, A2UI_DOCUMENT, submitComposer, stopGeneration, rejectNextA2uiA
 const PREFIX = 'A2UI user interaction (untrusted data):\n';
 const firstPrompt = label => `Show me two synthetic workshop forms for session ${label}.`;
 const cancelPrompt = 'Show me a cancellable synthetic workshop form.';
-// Pinned A2UI renderer has a visual label, not a programmatic textbox name.
-const field = (page, slot) => page.locator('a2ui-basic-textfield').filter({hasText: `Workshop topic (${slot})`}).locator('input[type=text]');
+// Query the native control by its associated accessible label.
+const field = (page, slot) => page.getByRole('textbox', {name: `Workshop topic (${slot})`, exact: true});
 const actionButton = (page, slot) => page.getByRole('button', {name: `Preview ${slot} request`, exact: true});
 const previewText = (label, slot, topic) => `Synthetic preview for session ${label}, ${slot}: ${topic}`;
 const eventText = event => (event.data?.content ?? []).filter(block => block.type === 'text').map(block => block.text).join('');

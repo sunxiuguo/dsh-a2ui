@@ -8,7 +8,7 @@ It uses the official A2UI schemas and renderer, with explicit validation, stream
 
 [See it in DSH](#see-it-in-deepseek-harness) · [Try it locally](#quick-start) · [Compatibility](#compatibility-and-support) · [Roadmap](#roadmap) · [Report an issue](https://github.com/sunxiuguo/dsh-a2ui/issues)
 
-**Development preview: 0.1.0-alpha.8.** A bounded synthetic workflow now passes in the official DSH Web host, including native plugin installation, HTTP RPC/WebSocket transport, two-session interaction, cancellation and restart restoration of authored history. The provider is scripted; live models and complete A2UI conformance are not certified. This is an additional project, not a replacement for DSH GenUI.
+**Development preview: 0.1.0-alpha.9.** Alpha.9 adds a focused accessible TextField view through standard catalog extension APIs. The prior alpha.8 bounded synthetic workflow passed in the official DSH Web host, including native plugin installation, HTTP RPC/WebSocket transport, two-session interaction, cancellation and restart restoration of authored history. The provider is scripted; live models and complete A2UI conformance are not certified. This is an additional project, not a replacement for DSH GenUI.
 
 ## See it in DeepSeek Harness
 
@@ -87,7 +87,7 @@ Agent tool call: render_a2ui({ messages })
   → schema, compatibility and document validation
   → DSH tool-result presentation metadata
   → A2UI conversation node
-  → official A2UI renderer
+  → official A2UI runtime + focused accessible TextField view
   → user interaction
   → validated action, sent as labelled data to the owning conversation
   → next agent turn
@@ -108,6 +108,7 @@ This matrix describes the alpha's bounded implementation and evidence, not compl
 | A2UI protocol | v0.9 and v0.9.1 envelopes; unchanged official schemas pinned from v0.9.1 | A2UI v1.0 is not supported. |
 | Official runtime | `@a2ui/react` and `@a2ui/web_core` 0.14.0 | Other renderer versions and cross-renderer parity are not certified. |
 | Basic catalog | Contract fixtures for 15 permitted components and 13 permitted functions; separate function-result tests | Full variants, interactions, locales, accessibility and semantic conformance remain open. See [coverage](docs/catalog-coverage.md). |
+| TextField accessibility | Alpha.9 plugin-owned view using official schema/binder; associated native labels across four variants, dynamic names and explicit validation descriptions | Other component accessibility and screen-reader certification remain open. See [scope and evidence](docs/textfield-accessibility.md). |
 | Validation | Explicit `checks` with `regex`, including independently gated Buttons | `TextField.validationRegexp` is valid A2UI but ignored by the pinned runtime, so alpha.8 rejects it with `COMPATIBILITY`, even when empty or combined with `checks`. No automatic rewrite occurs. |
 | Streaming | Incremental JSONL and DSH tool-argument previews; native Web-host streaming over HTTP RPC/WebSocket with inert previews and Stop cancellation | The provider is scripted. Cancellation during/after tool execution and broader network-recovery behavior are not certified. |
 | Actions | Two native sessions with overlapping surface IDs; actions reach the owning next turn. Controlled pre-admission HTTP rejection retains edits; deliberate retry is admitted once in the tested scenario. | No automatic retry was observed in the bounded test. This is not an exactly-once guarantee; unconfirmed delivery can still be ambiguous. |
@@ -132,7 +133,7 @@ The package contains server and client entries plus its `cordis.patch.yml` bundl
 If you already have the compatible DSH **0.2.0-rc.2** installation and a complete Web profile, replace `YOUR_EXISTING_WEB_PROFILE` with that profile's name and install the local tarball using the native CLI syntax exercised by the acceptance run:
 
 ```sh
-dsh plugin --profile YOUR_EXISTING_WEB_PROFILE add ./dsh-a2ui-0.1.0-alpha.8.tgz --ignore-scripts
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE add ./dsh-a2ui-0.1.0-alpha.9.tgz --ignore-scripts
 ```
 
 This command targets that existing profile; it does not create a complete DSH installation. Configure any real model and its credentials yourself through DSH's normal settings. Real-model behavior remains outside this acceptance result.

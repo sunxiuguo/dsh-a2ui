@@ -7,3 +7,5 @@ Official `@a2ui/react`, `@a2ui/web_core`, and `@a2ui/markdown-it` are Apache-2.0
 The DSH conversation-node integration was informed by the MIT-licensed valuz-ai/dsh-valuz-genui v0.2.2 source at `7c5f28f5c4610ef0d61d27798c0118a46e433bef`. Its license is retained in `vendor/valuz/LICENSE`. No claim of original invention is made for DSH event/slot integration patterns. Valuz runtime code and catalog are not dependencies of this project.
 
 The test-only full-host helpers in `scripts/full-host` adapt selector and RPC patterns from DeepSeek Harness `639ed015397290b3745d163aafe02ffee4aa3f84` (MIT, copyright 2026 DeepSeek). The full MIT notice is retained in `scripts/full-host/LICENSE.deepseek`. These helpers are not part of the runtime plugin bundle.
+
+The plugin-owned TextField Web Component in `src/catalog.tsx` adapts native-input presentation and CSS variable styles from `@a2ui/web_core` 0.14.0's universal TextField (Copyright 2024 Google LLC, Apache-2.0). Its official generic binder and schema are reused through public catalog APIs; the installed vendor implementation is not modified. The retained full Apache license is under `vendor/runtime-licenses`.

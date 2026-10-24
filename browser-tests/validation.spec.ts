@@ -7,9 +7,8 @@ test('explicit checks gate only valid synthetic actions and survive replay and e
  await page.goto('/');
  await page.getByRole('button',{name:'Stream validation example',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('Validated.');
- // The pinned renderer's visual label is not programmatically associated.
- // Scope by the actual component instead of claiming an accessible textbox name.
- const input=page.locator('a2ui-basic-textfield').filter({hasText:'Synthetic code'}).locator('input[type=text]');
+ // The plugin-owned TextField view associates its visible label with the native control.
+ const input=page.getByRole('textbox',{name:'Synthetic code',exact:true});
  const preview=page.getByRole('button',{name:'Preview valid code',exact:true});
  await expect(input).toHaveValue('AB12');await expect(preview).toBeEnabled();
  await input.fill('bad');await expect(preview).toBeDisabled();
@@ -33,11 +32,11 @@ test('explicit checks gate only valid synthetic actions and survive replay and e
  // Starting another example replaces the form and its action log, not the saved recording.
  await page.getByRole('button',{name:'Stream synthetic example',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('Validated.');
- await expect(input).toHaveCount(0);await expect(page.locator('a2ui-basic-textfield').filter({hasText:'Workshop topic'}).locator('input[type=text]')).toHaveValue('Ceramics for beginners');
+ await expect(input).toHaveCount(0);await expect(page.getByRole('textbox',{name:'Workshop topic',exact:true})).toHaveValue('Ceramics for beginners');
  await page.getByRole('button',{name:'Stream validation example',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('Validated.');
  await expect(input).toHaveValue('AB12');await expect(preview).toBeEnabled();
- await expect(page.locator('a2ui-basic-textfield').filter({hasText:'Workshop topic'}).locator('input[type=text]')).toHaveCount(0);
+ await expect(page.getByRole('textbox',{name:'Workshop topic',exact:true})).toHaveCount(0);
  await expect(page.locator('pre')).toHaveText('No actions sent.');
  expect(errors).toEqual([]);
 });
@@ -51,7 +50,7 @@ for(const version of ['v0.9','v0.9.1'])test(`old ${version} recording visibly re
  await page.getByRole('textbox',{name:'Portable recording',exact:true}).fill(JSON.stringify({format:'dsh-a2ui-recording/1',messages,snapshots:[],actions:[]}));
  await page.getByRole('button',{name:'Restore recording',exact:true}).click();
  await expect(page.getByRole('status')).toContainText('COMPATIBILITY: TextField.validationRegexp');
- await expect(page.locator('a2ui-basic-textfield').filter({hasText:'Workshop topic'}).locator('input[type=text]')).toHaveValue('Ceramics for beginners');
- await expect(page.locator('a2ui-basic-textfield').filter({hasText:'Synthetic code'}).locator('input[type=text]')).toHaveCount(0);
+ await expect(page.getByRole('textbox',{name:'Workshop topic',exact:true})).toHaveValue('Ceramics for beginners');
+ await expect(page.getByRole('textbox',{name:'Synthetic code',exact:true})).toHaveCount(0);
  await expect(page.locator('pre')).toHaveText('No actions sent.');
 });

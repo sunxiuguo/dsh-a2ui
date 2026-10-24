@@ -32,7 +32,7 @@ try {
  await pause('Standalone synthetic preview; no live model or external service');
  await page.getByRole('button',{name:'Stream validation example',exact:true}).click();
  await page.getByRole('status').filter({hasText:'Validated.'}).waitFor();
- const input=page.locator('a2ui-basic-textfield').filter({hasText:'Synthetic code'}).locator('input[type=text]');
+ const input=page.getByRole('textbox',{name:'Synthetic code',exact:true});
  const preview=page.getByRole('button',{name:'Preview valid code',exact:true});
  await expect(input).toHaveValue('AB12');await pause('Initial AB12');
  await input.fill('bad');
@@ -62,7 +62,7 @@ try {
  await page.getByRole('button',{name:'Restore recording',exact:true}).click();
  await page.getByRole('status').filter({hasText:'COMPATIBILITY: TextField.validationRegexp'}).waitFor();
  await expect(input).toHaveCount(0);
- await expect(page.locator('a2ui-basic-textfield').filter({hasText:'Workshop topic'}).locator('input[type=text]')).toHaveValue('Ceramics for beginners');
+ await expect(page.getByRole('textbox',{name:'Workshop topic',exact:true})).toHaveValue('Ceramics for beginners');
  await expect(page.locator('pre')).toHaveText('No actions sent.');
  await page.getByText('Portable recording: inspect, paste, restore',{exact:true}).click();
  await pause('Unsupported property rejected, previous surface preserved');

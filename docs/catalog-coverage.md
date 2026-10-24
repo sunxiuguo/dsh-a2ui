@@ -50,9 +50,10 @@ Test discovery is not browser execution. Its exact-commit CI result must be chec
 before claiming these additional controls have passed real-browser acceptance.
 
 The full DSH launcher 0.2.0-rc.2 brings the base, Web and other profile packages;
-the SDK dependencies already present here are not a complete installation. No live
-DSH-host acceptance is claimed. Full catalog variants, reactive subscriptions,
-locale combinations, accessibility and host failure/cancellation remain open.
+the SDK dependencies already present here are not a complete installation. The later [native-host acceptance](full-host-acceptance.md) verifies a bounded
+synthetic-provider Web workflow, including cancellation and graceful restart.
+It does not validate a live model or complete catalog variants, reactive
+subscriptions, locale combinations, accessibility, or all host failures.
 
 ## Navigation and visible-selection increment
 
