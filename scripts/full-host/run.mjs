@@ -9,6 +9,7 @@ import {createRequire} from 'node:module';
 import {chromium,expect} from '@playwright/test';
 import {runPrivate,startPrivateHost,stopPrivateCommands} from './process.mjs';
 import {makeOverlay} from './make-overlay.mjs';
+import {failureSite} from './diagnostics.mjs';
 import {exerciseHost,checkRestoredHost} from './scenario.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const runtime=resolve(root,'scripts/full-host/runtime');
@@ -85,7 +86,7 @@ try{
  await reopened.screenshot({path:join(out,'session-b-restored.png'),fullPage:true});
  assert.equal(host.egressRejected(),false);assert.equal(network.external,0);assert.equal(network.pageErrors,0);
  receipt.result='PASS';
-}catch(error){failure=error;receipt.result='FAIL';receipt.failedStage=stage;receipt.failureClass=error?.name??'Error';}
+}catch(error){failure=error;receipt.result='FAIL';receipt.failedStage=stage;receipt.failureClass=error?.name??'Error';receipt.failureSite=failureSite(error);receipt.providerEvents=Object.fromEntries(['request','finished','awaiting-cancel','cancelled'].map(event=>[event,host?.observations().filter(item=>item.event===event).length??0]));}
 finally{
  if(cleanupPromise){await cleanupPromise;cleanupPromise=undefined;}
  const clean=await cleanup();

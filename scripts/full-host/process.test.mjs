@@ -35,3 +35,11 @@ test('workflow is valid YAML and every full-host step keeps the one-shot gate',a
  for(const step of steps){for(const clause of ["github.event_name == 'push'","github.ref == 'refs/heads/master'","github.run_attempt == '1'","github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'"])assert.ok(step.if.includes(clause));}
  assert.deepEqual(workflow.permissions,{contents:'read'});
 });
+
+test('failure diagnostics retain only allowlisted source coordinates',async()=>{
+ const {failureSite}=await import('./diagnostics.mjs');
+ const error={stack:'AssertionError: DO_NOT_EXPORT\n    at submit (file:///tmp/private/scripts/full-host/shell-scenario.mjs:41:9)\n    at secret (https://synthetic.invalid/?token=DO_NOT_EXPORT:4:9)'};
+ assert.deepEqual(failureSite(error),{file:'shell-scenario.mjs',line:41});
+ for(const stack of ['Error: DO_NOT_EXPORT','Error\n at /private/secret.mjs:3:4','Error\n at /scripts/full-host/secret.mjs:3:4','Error\n at /scripts/full-host/run.mjs:3:4?token=DO_NOT_EXPORT'])assert.deepEqual(failureSite({stack}),{file:'unavailable'});
+ assert.equal(JSON.stringify(failureSite(error)).includes('DO_NOT_EXPORT'),false);
+});
