@@ -38,14 +38,16 @@ jobs:
       - name: Exercise official CLI without starting the host
         run: node harness/scripts/verify-native-profile-lifecycle.mjs current previous lifecycle-evidence
       - name: Run current alpha.13 full host once under the new explicit scope
-        if: github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
+        if: >-
+          github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
         env:
           DSH_A2UI_APPROVED_ATTEMPT: 20261025T143519Z
         run: |
           cp harness/scripts/full-host/run-current-onboarding.mjs current/scripts/full-host/run-current-onboarding.mjs
           node current/scripts/full-host/run-current-onboarding.mjs
       - name: Preserve only reviewed synthetic full-host evidence
-        if: always() && github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
+        if: >-
+          always() && github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: dsh-a2ui-alpha13-full-host-${{ github.sha }}
