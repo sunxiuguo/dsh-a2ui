@@ -13,7 +13,7 @@ const {runPrivate,stopPrivateCommands}=await import(pathToFileURL(join(current,'
 const runtime=join(current,'scripts/full-host/runtime');
 const req=createRequire(join(runtime,'package.json'));
 assert.equal(req('@deepseek-ai/dsh/package.json').version,'0.2.0-rc.2');
-assert.equal(req('pnpm/package.json').version,'11.25.0');
+assert.equal(req('pnpm').version,'11.25.0');
 const cli=req.resolve('@deepseek-ai/dsh/package.json').replace(/package\.json$/,'lib/bin.js');
 const versions={current:'0.1.0-alpha.13',previous:'0.1.0-alpha.8'};
 for(const [name,path]of[['current',current],['previous',previous]])assert.equal(JSON.parse(await readFile(join(path,'package.json'),'utf8')).version,versions[name]);
