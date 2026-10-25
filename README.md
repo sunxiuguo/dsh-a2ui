@@ -141,6 +141,32 @@ dsh plugin --profile YOUR_EXISTING_WEB_PROFILE add ./dsh-a2ui-0.1.0-alpha.13.tgz
 
 This command targets that existing profile; it does not create a complete DSH installation. Configure any real model and its credentials yourself through DSH's normal settings. Real-model behavior remains outside this acceptance result.
 
+### Update, roll back or remove from that profile
+
+**Stop the DSH process using this profile before replacing or removing the package.** Keep the previously working tarball and its source commit before updating. The pinned DSH 0.2.0-rc.2 plugin manager requires a process restart to load a replacement JavaScript module generation; a successful package command does not prove that an already-running host or browser is using the new code.
+
+For an update, build and test the chosen source revision as above, then use `add` again with its exact local tarball and the **same** profile. For rollback, use the same command with the retained prior tarball. Do not use an npm registry update for this unpublished package. Replace `CHOSEN_TARBALL.tgz` with the actual filename:
+
+```sh
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE add ./CHOSEN_TARBALL.tgz --ignore-scripts
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE list dsh-a2ui
+```
+
+Restart that profile using your existing DSH launch command, then reload its Web page. Check both the installed version and a fresh synthetic `render_a2ui` interaction; a text validation receipt alone does not establish client rendering. A bundle you deliberately disabled remains disabled when replaced—check the profile's plugin selection rather than assuming an update re-enables it.
+
+To remove only this plugin from the stopped profile:
+
+```sh
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE remove dsh-a2ui --config.ignore-scripts=true
+dsh plugin --profile YOUR_EXISTING_WEB_PROFILE list dsh-a2ui
+```
+
+Restart the same profile and reload its Web page. Do not delete the profile, conversation files or unrelated plugins. Removal is not an export or a migration of A2UI history; rendering old A2UI nodes without the plugin, or restoring them after reinstall/rollback, is not certified. Preserve any needed recordings and your existing host backup before changing versions. Unsent field drafts are not durable.
+
+The removal command uses pnpm’s single-command `--config.ignore-scripts=true` form; it does not change persistent or global settings.
+
+The packed checks verify official dependency-spec reconciliation after synthetic package placement (not an actual package-version swap): a new bundle is selected, replacement does not duplicate it or re-enable a deliberately disabled bundle, removal prunes its selection, and unrelated metadata remains. They do **not** execute native CLI update/removal, live-host restart or browser recovery. The restart requirement comes from the pinned [official plugin-manager package](https://www.npmjs.com/package/@deepseek-ai/dsh-plugin-manager/v/0.2.0-rc.2). These instructions apply to the published v0.9/v0.9.1 plugin only; they do not enable an experimental A2UI v1 implementation.
+
 The official DSH 0.2.0-rc.2 CLI installed the packed **alpha.8** plugin into a new complete Web profile in the [2026-10-24 full-host acceptance](docs/full-host-acceptance.md). The shipped shell loaded it and completed the bounded synthetic interaction/restart scenario, with lifecycle scripts disabled. This supersedes the earlier alpha.3 empty-profile installation-only evidence. Code Mode and other host versions remain unverified.
 
 The full-host harness is a separately authorized, isolated acceptance experiment, not part of the ordinary local quick start or an automatically recurring test. Its temporary native test credentials are removed during verified cleanup; it does not import an existing user profile.
