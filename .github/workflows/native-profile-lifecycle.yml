@@ -1,0 +1,72 @@
+name: Native stopped-profile package lifecycle
+on:
+  push:
+    branches: [test/native-profile-lifecycle-20261025]
+permissions:
+  contents: read
+jobs:
+  lifecycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          path: harness
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: a8744445f4475c5a0fceb32a018a00617a954038
+          persist-credentials: false
+          path: current
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: a8bb06d8acdfdc9bcffb005fd34a378ec741c312
+          persist-credentials: false
+          path: previous
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+      - name: Build exact alpha.8 and alpha.13 packages with lifecycle scripts disabled
+        run: |
+          set -euo pipefail
+          test "$(git -C current rev-parse HEAD)" = a8744445f4475c5a0fceb32a018a00617a954038
+          test "$(git -C previous rev-parse HEAD)" = a8bb06d8acdfdc9bcffb005fd34a378ec741c312
+          for source in previous current; do
+            (cd "$source" && npm ci --ignore-scripts --no-audit --no-fund && npm run build:plugin)
+          done
+          npm ci --prefix current/scripts/full-host/runtime --ignore-scripts --no-audit --no-fund
+      - name: Exercise official CLI without starting the host
+        run: node harness/scripts/verify-native-profile-lifecycle.mjs current previous lifecycle-evidence
+      - name: Run current alpha.13 full host once under the new explicit scope
+        if: github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
+        env:
+          DSH_A2UI_APPROVED_ATTEMPT: 20261025T143519Z
+        run: |
+          cp harness/scripts/full-host/run-current-onboarding.mjs current/scripts/full-host/run-current-onboarding.mjs
+          node current/scripts/full-host/run-current-onboarding.mjs
+      - name: Preserve only reviewed synthetic full-host evidence
+        if: always() && github.run_attempt == '1' && github.event.head_commit.message == 'test: approved alpha13 onboarding (20261025T143519Z)'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dsh-a2ui-alpha13-full-host-${{ github.sha }}
+          path: |
+            current/full-host-evidence/receipt.json
+            current/full-host-evidence/session-a.png
+            current/full-host-evidence/session-b-restored.png
+          if-no-files-found: warn
+          retention-days: 7
+          include-hidden-files: false
+      - name: Check source remained unchanged
+        if: always()
+        run: |
+          git -C current diff --exit-code
+          git -C previous diff --exit-code
+      - name: Preserve sanitized no-auth lifecycle receipt only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dsh-a2ui-native-profile-lifecycle-${{ github.sha }}
+          path: lifecycle-evidence/receipt.json
+          if-no-files-found: warn
+          retention-days: 7
+          include-hidden-files: false
