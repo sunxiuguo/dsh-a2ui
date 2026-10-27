@@ -133,6 +133,8 @@ npm pack --ignore-scripts
 
 The package contains server and client entries plus its `cordis.patch.yml` bundle contribution. It is **not published to npm**.
 
+For a prebuilt package, download the [alpha.13 release tarball](https://github.com/sunxiuguo/dsh-a2ui/releases/download/v0.1.0-alpha.13/dsh-a2ui-0.1.0-alpha.13.tgz) and use the local-tarball command below. The plugin directory may also display a generic `github:sunxiuguo/dsh-a2ui` shortcut; that source-install shortcut is **not a supported installation route for this alpha**. This repository does not commit `lib/` or define an automatic install-time build. Allowing lifecycle scripts alone does not replace the explicit build-and-pack steps above.
+
 If you already have the compatible DSH **0.2.0-rc.2** installation and a complete Web profile, replace `YOUR_EXISTING_WEB_PROFILE` with that profile's name and install the local tarball using the native CLI syntax exercised by the acceptance run:
 
 ```sh
