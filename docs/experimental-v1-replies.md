@@ -80,11 +80,60 @@ With the repository's exact existing dependencies available:
 3. `node node_modules/vite/bin/vite.js build --config vite.reply-v1.config.ts`
 4. `node node_modules/vitest/vitest.mjs run --config vitest.reply-v1-host.config.ts`
 
-The service acceptance uses actual official DSH client session, controller,
-event registry, view assembly, renderer and slot packages. Its remote `prompt`
-endpoint is synthetic and in-memory. It does not run the native server,
-HTTP/WebSocket bridge, real AgentLoop, provider, persistence or complete shell.
-The jsdom stylesheet shim remains layout-free and is not browser validation.
+This command runs two distinct fixtures. `reply-v1.host.acceptance.tsx` uses
+actual official DSH client session, controller, event registry, view assembly,
+renderer and slot packages with a synthetic in-memory `prompt` endpoint.
+Its hand-authored events do not establish AgentLoop or tool-dispatch behavior.
+
+### Real agent-loop and follow-stream fixture
+
+`test/reply-v1.loop.acceptance.tsx` adapts `examples/synthetic-loop.mjs` and
+the existing pinned follow-stream checks. It composes real SessionStore,
+AgentRegistry, LlmRuntime, ToolRuntime and AgentLoop services, and explicitly
+registers the separate v1 tool and built client. Before that opt-in the real
+registry exposes only the legacy `render_a2ui` tool. No default entry, profile,
+package export or ordinary plugin build is changed.
+
+Only the deterministic model provider and the in-process carrier/prompt/cancel
+bridge are synthetic. The official loop dispatches every tested tool call and
+creates its result metadata. Official SessionHistoryController.follow,
+SessionQuery live reads, RemoteStream and client session/assistant-stream
+services deliver those events; the test never inserts tool-result events or
+calls the tool directly. The pinned internal history artifact is the same one
+used by the existing stream fixture; indexed search is outside this composition.
+
+The ordered scenario verifies:
+
+- Two actual agents sharing `sameSurface`, each with independently resolved
+  model data and an owning conversation scope.
+- Complete streamed arguments remain non-actionable until final tool metadata.
+  Cancelling A withdraws its real transient without dispatching a tool or
+  changing B. An invalid model-authored call then produces a real failed tool
+  result and no choices; a later valid A turn recovers.
+- Successful real results retain the exact canonical messages and actual call
+  identity. Rendered dynamic B and literal/dynamic A clicks pass the complete
+  v1 envelope through the conversation send controller to the next actual
+  AgentLoop provider call, including resolved `userMessage`, context, surface,
+  source component and timestamp. `userMessage` is never substituted for the
+  labelled envelope. The expected sequence is independently authored as
+  B/dynamic, A/literal, A/dynamic, rather than selected from any received action
+  field. Captured deliveries are deep-cloned; timestamps are validated separately
+  from the prescribed complete envelopes.
+- Both sessions resync through real history snapshots without a new delivery
+  or provider call. Each session must receive its own additional snapshot and
+  retain its own provider/delivery counts; an aggregate snapshot count cannot
+  satisfy this check. The absence assertion observes 250 ms after resync and idle;
+  it is not an exactly-once guarantee or a persistence claim.
+
+Expected totals are two agents, three actual tool dispatches (two successful,
+one rejected), six completed turns, one cancelled turn, ten provider requests
+and three explicit reply clicks. The existing acceptance workflow runs both
+fixtures after building the separate experimental client.
+
+These are jsdom/in-process tests. Neither fixture runs a native server,
+HTTP/WebSocket transport, durable persistence, complete shell or live model.
+The stylesheet shim is layout-free; these results do not establish browser
+rendering, visual accessibility or native-host acceptance.
 
 ### Real browser service fixture
 
