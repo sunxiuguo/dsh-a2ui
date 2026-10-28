@@ -121,6 +121,15 @@ This matrix describes the alpha's bounded implementation and evidence, not compl
 
 Upstream identifies [A2UI v0.9.1 as current and v1.0 as a candidate](https://a2ui.org/). This bridge's support is narrower than the standard. See the [packed acceptance ledger](docs/packed-host-acceptance.md) for the exact test boundaries and alpha regression history.
 
+An additional [rc.3 SDK compatibility experiment](validation/rc3/README.md) passes
+with exact **DSH 0.2.1-rc.3** packages and normal **pnpm 11.19.0** resolution.
+It preserves the original plugin artifact and rc.2 fixtures, and checks synthetic
+two-session actions, the owning next agent turn, cancellation and replay.
+Normal **npm 11.9.0** resolution separately fails with `ERESOLVE` on the unchanged
+prerelease peer range. Run `python3 validation/rc3/validate-rc3.py` in an isolated
+cloud container to reproduce the SDK checks. This is no adoption claim; native
+rc.3 full-host, visual browser, live-model and production compatibility remain unverified.
+
 ### DSH package installation
 
 Build and inspect a local plugin artifact:

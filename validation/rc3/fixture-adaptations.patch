@@ -1,0 +1,127 @@
+--- scripts/verify-packed-host.mjs
++++ compat-fixtures/host.mjs
+@@ -14,7 +14,7 @@
+ ];
+ const require=createRequire(import.meta.url);
+ const versions={};
+-for(const [name,expected] of Object.entries({'@deepseek-ai/cordis':'4.0.5','@deepseek-ai/dsh-system-prompt':'0.2.0-rc.2','@deepseek-ai/dsh-tools':'0.2.0-rc.2'})){
++for(const [name,expected] of Object.entries({'@deepseek-ai/cordis':'4.0.5','@deepseek-ai/dsh-system-prompt':'0.2.1-rc.3','@deepseek-ai/dsh-tools':'0.2.1-rc.3'})){
+  const version=JSON.parse(readFileSync(resolve(dirname(require.resolve(name)),'../package.json'),'utf8')).version;
+  assert.equal(version,expected,`Uncertified host dependency: ${name}`);versions[name]=version;
+ }
+@@ -40,6 +40,6 @@
+  const abort=new AbortController();abort.abort();const cancelled=await run({messages},abort.signal);assert.equal(cancelled.isError,true);assert.equal(cancelled.meta,undefined);assert.equal(cancelled.error.info.code,'ABORTED_BEFORE_DISPATCH');checks.push('pre-dispatch cancellation has no successful presentation metadata');
+  await mounted.dispose();assert.equal(ctx.tools.get('render_a2ui'),undefined);const removed=await run({messages});assert.equal(removed.isError,true);assert.equal(removed.error.info.code,'UNKNOWN_TOOL');checks.push('plugin unload removes registered tool and dispatch rejects');
+  const remount=ctx.plugin(plugin);await remount;assert.equal((await run({messages})).isError,false);checks.push('remount restores real pipeline');
+- const receipt={versions,observedAt:new Date().toISOString(),scope:'Packed plugin loaded by actual Cordis 4.0.5 and DSH ToolRuntime 0.2.0-rc.2; no full DSH process, browser client, model or credentials',checks};
++ const receipt={versions,observedAt:new Date().toISOString(),scope:'Packed plugin loaded by actual Cordis 4.0.5 and DSH ToolRuntime 0.2.1-rc.3; no full DSH process, browser client, model or credentials',checks};
+  console.log(JSON.stringify(receipt,null,2));
+ } finally {await ctx.fiber.dispose();}
+--- scripts/verify-profile-lifecycle.mjs
++++ compat-fixtures/lifecycle.mjs
+@@ -44,5 +44,5 @@
+  assert.deepEqual(result.manifest.dsh.profile.bundles,['synthetic-template']);
+  assert.deepEqual(result.dependencies,[]);
+  assert.equal(result.manifest.description,'retain unrelated metadata');
+- console.log(JSON.stringify({result:'PASS',packageVersion:installed.version,checks:['new bundle selected','dependency-spec change not duplicated','disabled dependency-spec change stays disabled','removed bundle pruned','unrelated metadata retained'],scope:'official rc.2 dependency-spec reconciliation after synthetic package placement; same installed symlink/version; no CLI installation, package-version swap, running-host replacement, restart, browser or history restoration'}));
++ console.log(JSON.stringify({result:'PASS',packageVersion:installed.version,checks:['new bundle selected','dependency-spec change not duplicated','disabled dependency-spec change stays disabled','removed bundle pruned','unrelated metadata retained'],scope:'official rc.3 dependency-spec reconciliation after synthetic package placement; same installed symlink/version; no CLI installation, package-version swap, running-host replacement, restart, browser or history restoration'}));
+ } finally {rmSync(profile,{recursive:true,force:true});}
+--- scripts/verify-packed-persistence.mjs
++++ compat-fixtures/persistence.mjs
+@@ -21,7 +21,7 @@
+ const {createToolResultMessage, createAssistantMessage} = await load('@deepseek-ai/dsh-llm');
+ const {default: SystemPrompt} = await load('@deepseek-ai/dsh-system-prompt');
+ const {default: ToolRuntime} = await load('@deepseek-ai/dsh-tools');
+-const {default: JsonlSessionPersistence} = await load('@deepseek-ai/dsh-session-persistence-jsonl');
++const JsonlSessionPersistence = await load('@deepseek-ai/dsh-session-persistence-jsonl');
+ const plugin = await import(pathToFileURL(resolve(packed, 'lib/index.js')).href);
+ const root = await mkdtemp(join(base, 'synthetic-session-logs-'));
+ const catalogId = 'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json';
+@@ -38,7 +38,7 @@
+ try {
+   const ctx = new Context(); contexts.push(ctx);
+   new SessionStore(ctx);
+-  const backend = new JsonlSessionPersistence(ctx, {root, compression:'none'});
++  await ctx.plugin(JsonlSessionPersistence, {root, compression:'none'}); const backend=ctx.sessionPersistence;
+   await ctx.plugin(SystemPrompt, {includeRuntimeContext:false});
+   await ctx.plugin(ToolRuntime);
+   const mounted = ctx.plugin(plugin); await mounted;
+@@ -94,7 +94,7 @@
+ 
+   // No backend/cache instance survives this boundary. The files are read again.
+   const coldCtx = new Context(); contexts.push(coldCtx);
+-  cold = new JsonlSessionPersistence(coldCtx, {root,compression:'none'});
++  await coldCtx.plugin(JsonlSessionPersistence, {root,compression:'none'}); cold=coldCtx.sessionPersistence;
+   const listed = await cold.list();
+   assert.deepEqual(listed.map(row => row.header.id).sort(), [...expected.keys()].sort());
+   const replayEvidence = [];
+--- examples/synthetic-loop.mjs
++++ compat-examples/loop.mjs
+@@ -22,7 +22,7 @@
+ const topic = process.argv[2] ?? 'Hand-built pottery';
+ assert.ok(topic.trim() && topic.length <= 200 && !/[\r\n]/.test(topic), 'Use a single-line synthetic workshop topic of 1–200 characters.');
+ for (const name of ['dsh-agent-loop', 'dsh-agent', 'dsh-llm', 'dsh-session', 'dsh-tools', 'dsh-api-session-controller', 'dsh-client-ui-conversation', 'dsh-client-ui-renderer']) {
+-  assert.equal(JSON.parse(readFileSync(require.resolve(`@deepseek-ai/${name}/package.json`), 'utf8')).version, '0.2.0-rc.2', `Uncertified SDK: ${name}`);
++  assert.equal(JSON.parse(readFileSync(require.resolve(`@deepseek-ai/${name}/package.json`), 'utf8')).version, '0.2.1-rc.3', `Uncertified SDK: ${name}`);
+ }
+ assert.equal(JSON.parse(readFileSync(require.resolve('@deepseek-ai/cordis/package.json'), 'utf8')).version, '4.0.5');
+ console.log('DSH A2UI: no-key synthetic agent-loop example');
+@@ -117,10 +117,10 @@
+ function loadClient() {
+   const factories = new Map();
+   const primitives = new Proxy({}, {get() { throw new Error('The full DSH shell/composer is outside this example.'); }});
+-  const modules = new Map([['react', React], ['react/jsx-runtime', jsx], ['react-dom', ReactDOM], ['react-dom/client', ReactClient], ['@deepseek-ai/cordis', Cordis], ['@deepseek-ai/dsh-client-ui-slots', slots], ['@deepseek-ai/dsh-client-store', store], ['@deepseek-ai/dsh-client-ui-primitives', primitives]]);
++  const modules = new Map([['zod', createRequire(require.resolve('@deepseek-ai/dsh-api-session-controller/package.json'))('zod')], ['react', React], ['react/jsx-runtime', jsx], ['react-dom', ReactDOM], ['react-dom/client', ReactClient], ['@deepseek-ai/cordis', Cordis], ['@deepseek-ai/dsh-client-ui-slots', slots], ['@deepseek-ai/dsh-client-store', store], ['@deepseek-ai/dsh-client-ui-primitives', primitives]]);
+   window.__ModuleLoader__ = {load:({id, factory}) => factories.set(id, factory)};
+   for (const name of ['dsh-api-gateway', 'dsh-api-session-controller', 'dsh-client-ui-renderer', 'dsh-client-ui-session', 'dsh-client-ui-conversation']) {
+-    window.eval(readFileSync(resolve(dirname(require.resolve(`@deepseek-ai/${name}/package.json`)), 'lib/client.js'), 'utf8'));
++    window.eval(readFileSync(resolve(dirname(require.resolve(`@deepseek-ai/${name}/package.json`)), name === 'dsh-api-gateway' ? 'lib/client.browser.js' : 'lib/client.js'), 'utf8'));
+   }
+   window.eval(readFileSync(resolve(artifact, 'lib/client.js'), 'utf8'));
+   const load = id => {
+--- scripts/verify-packed-stream.mjs
++++ compat-fixtures/stream.mjs
+@@ -44,7 +44,7 @@
+ }
+ assert.ok(topic.trim() && topic.length <= 200 && !/[\r\n]/.test(topic), 'Use a single-line synthetic workshop topic of 1–200 characters.');
+ for (const name of ['dsh-agent-loop', 'dsh-agent', 'dsh-llm', 'dsh-session', 'dsh-tools', 'dsh-session-query', 'dsh-api-gateway', 'dsh-api-session-controller', 'dsh-client-ui-conversation', 'dsh-client-ui-renderer']) {
+-  assert.equal(JSON.parse(readFileSync(require.resolve(`@deepseek-ai/${name}/package.json`), 'utf8')).version, '0.2.0-rc.2', `Uncertified SDK: ${name}`);
++  assert.equal(JSON.parse(readFileSync(require.resolve(`@deepseek-ai/${name}/package.json`), 'utf8')).version, '0.2.1-rc.3', `Uncertified SDK: ${name}`);
+ }
+ assert.equal(JSON.parse(readFileSync(require.resolve('@deepseek-ai/cordis/package.json'), 'utf8')).version, '4.0.5');
+ console.log(`DSH A2UI: real follow/assistant-stream ${mode} acceptance`);
+@@ -146,10 +146,10 @@
+ function loadClient() {
+   const factories = new Map();
+   const primitives = new Proxy({}, {get() { throw new Error('The full DSH shell/composer is outside this example.'); }});
+-  const modules = new Map([['react', React], ['react/jsx-runtime', jsx], ['react-dom', ReactDOM], ['react-dom/client', ReactClient], ['@deepseek-ai/cordis', Cordis], ['@deepseek-ai/dsh-client-ui-slots', slots], ['@deepseek-ai/dsh-client-store', store], ['@deepseek-ai/dsh-client-ui-primitives', primitives]]);
++  const modules = new Map([['zod', createRequire(require.resolve('@deepseek-ai/dsh-api-session-controller/package.json'))('zod')], ['react', React], ['react/jsx-runtime', jsx], ['react-dom', ReactDOM], ['react-dom/client', ReactClient], ['@deepseek-ai/cordis', Cordis], ['@deepseek-ai/dsh-client-ui-slots', slots], ['@deepseek-ai/dsh-client-store', store], ['@deepseek-ai/dsh-client-ui-primitives', primitives]]);
+   window.__ModuleLoader__ = {load:({id, factory}) => factories.set(id, factory)};
+   for (const name of ['dsh-api-gateway', 'dsh-api-session-controller', 'dsh-client-ui-renderer', 'dsh-client-ui-session', 'dsh-client-ui-conversation']) {
+-    window.eval(readFileSync(resolve(dirname(require.resolve(`@deepseek-ai/${name}/package.json`)), 'lib/client.js'), 'utf8'));
++    window.eval(readFileSync(resolve(dirname(require.resolve(`@deepseek-ai/${name}/package.json`)), name === 'dsh-api-gateway' ? 'lib/client.browser.js' : 'lib/client.js'), 'utf8'));
+   }
+   window.eval(readFileSync(resolve(artifact, 'lib/client.js'), 'utf8'));
+   const load = id => {
+--- test/host-ui.acceptance.tsx
++++ compat-test/host-ui.acceptance.tsx
+@@ -7,11 +7,11 @@
+ const require=createRequire(import.meta.url);
+ // Evaluate once per browser registry; re-evaluating defines conflicting custom elements.
+ function loadPackedModules(){
+- const factories=new Map<string,any>();const modules=new Map<string,any>([['react',React],['react/jsx-runtime',jsx],['react-dom',ReactDOM],['react-dom/client',ReactClient],['@deepseek-ai/cordis',Cordis],['@deepseek-ai/dsh-client-ui-slots',slots],['@deepseek-ai/dsh-client-store',store],['@deepseek-ai/dsh-client-ui-primitives',primitives]]);
++ const factories=new Map<string,any>();const modules=new Map<string,any>([['zod',createRequire(require.resolve('@deepseek-ai/dsh-api-session-controller/package.json'))('zod')],['react',React],['react/jsx-runtime',jsx],['react-dom',ReactDOM],['react-dom/client',ReactClient],['@deepseek-ai/cordis',Cordis],['@deepseek-ai/dsh-client-ui-slots',slots],['@deepseek-ai/dsh-client-store',store],['@deepseek-ai/dsh-client-ui-primitives',primitives]]);
+  // Capture the shipped classic-script factories. The separate packed-profile
+  // acceptance covers the official graph/loader; this fixture exercises real UI services.
+  (window as any).__ModuleLoader__={load:({id,factory}:any)=>factories.set(id,factory)};
+- for(const n of ['dsh-api-gateway','dsh-api-session-controller','dsh-client-ui-renderer','dsh-client-ui-session','dsh-client-ui-conversation'])window.eval(readFileSync(resolve(dirname(require.resolve('@deepseek-ai/'+n+'/package.json')),'lib/client.js'),'utf8'));
++ for(const n of ['dsh-api-gateway','dsh-api-session-controller','dsh-client-ui-renderer','dsh-client-ui-session','dsh-client-ui-conversation'])window.eval(readFileSync(resolve(dirname(require.resolve('@deepseek-ai/'+n+'/package.json')),n==='dsh-api-gateway'?'lib/client.browser.js':'lib/client.js'),'utf8'));
+  const pkg=process.env.DSH_A2UI_PACKED_PATH;if(!pkg)throw Error('DSH_A2UI_PACKED_PATH must identify an extracted npm package');
+  window.eval(readFileSync(resolve(pkg,'lib/client.js'),'utf8'));
+  const load=(id:string):any=>{if(id.startsWith('@deepseek-ai/'))id=id.replace(/\/client$/, '');if(modules.has(id))return modules.get(id);const f=factories.get(id);if(!f)throw Error('Unseeded dependency '+id);const m=f(load);modules.set(id,m);return m;};
+--- vitest.host.config.ts
++++ vitest.compat.config.ts
+@@ -1,2 +1,2 @@
+ import {defineConfig} from 'vitest/config';
+-export default defineConfig({test:{include:['test/host-ui.acceptance.tsx'],environment:'jsdom',setupFiles:['./test/setup.ts'],pool:'forks',maxWorkers:1}});
++export default defineConfig({test:{include:['compat-test/host-ui.acceptance.tsx'],environment:'jsdom',setupFiles:['./test/setup.ts'],pool:'forks',maxWorkers:1}});
