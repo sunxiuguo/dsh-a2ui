@@ -99,3 +99,28 @@ cleanup verified. Two actual shell screenshots passed independent visual/privacy
 review. See the [full scope, source, receipt and limitations](full-host-acceptance.md).
 This does not certify live models, every component/function, all failure modes,
 Code Mode, accessibility, production deployment security, adoption or revenue.
+
+## Replay state and action meaning
+
+The regression in [`test/replay-boundary.test.tsx`](../test/replay-boundary.test.tsx)
+examines the distinction raised in [A2UI issue #2932](https://github.com/a2ui-project/a2ui/issues/2932).
+Portable recordings separate authored messages, field snapshots and action
+envelopes. A snapshot contains the whole active surface model, including fields
+outside the Button's submitted action context; review it for unsubmitted data
+before sharing an explicit export. Restoring it does not send historical actions.
+
+The action list records a resolved send callback, not a semantic decision. In
+the DSH adapter, the callback queues normal user input; prompt admission is not
+agent approval. A later authored rejection can coexist with that action record.
+Failed-send errors are transient and omitted from portable recordings, so their
+absence after import is not approval either. The fixture's Button remains enabled:
+replay does not establish durable one-shot accepted/rejected state.
+
+Run `npm test -- test/replay-boundary.test.tsx` within the existing suite. These
+checks use synthetic send callbacks and a directly appended authored rejection,
+with jsdom and its existing layout-free stylesheet shim. They do not exercise
+a model, DSH transport, native host or browser. Same-mounted-node retention is
+not durable draft storage; DSH history restores authored content, not unsent
+fields. Existing [native evidence](full-host-acceptance.md) and
+[rc.3 limits](../validation/rc3/README.md) remain separate: authored-history restart
+and the bounded rc.3 no-replay observation do not prove durable UI approval state.
