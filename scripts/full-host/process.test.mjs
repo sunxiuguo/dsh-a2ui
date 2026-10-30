@@ -27,12 +27,15 @@ test('private command cleanup retains a live descendant after direct child close
   assert.equal(alive(),false,'The synthetic regression process group must be removed');
  }
 });
-test('workflow is valid YAML and every full-host step keeps the one-shot gate',async()=>{
+test('workflow retires consumed full-host execution and retains synthetic acceptance',async()=>{
  const {readFile}=await import('node:fs/promises');const {default:yaml}=await import('js-yaml');
  const workflow=yaml.load(await readFile('.github/workflows/acceptance.yml','utf8'));
- const steps=workflow.jobs.acceptance.steps.filter(s=>s.name?.includes('full-host'));
- assert.equal(steps.length,3);
- for(const step of steps){for(const clause of ["github.event_name == 'push'","github.ref == 'refs/heads/master'","github.run_attempt == '1'","github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'"])assert.ok(step.if.includes(clause));}
+ // Historical host code/evidence remain, but an old approval cannot be a CI entry point.
+ // Inspect executable/configuration content, not step names that can be renamed.
+ const configured=JSON.stringify(workflow);
+ for(const retired of ['DSH_A2UI_APPROVED_ATTEMPT','20261024T110240Z','scripts/full-host/run.mjs','--prefix scripts/full-host/runtime','full-host-evidence/'])assert.equal(configured.includes(retired),false,`Consumed host entry remains: ${retired}`);
+ const commands=workflow.jobs.acceptance.steps.map(step=>step.run??'');
+ for(const retained of ['npm run typecheck && npm test','node --test scripts/full-host/process.test.mjs scripts/full-host/provider.test.mjs','npm run test:packed','npm run test:browser'])assert.ok(commands.includes(retained),`Synthetic acceptance command missing: ${retained}`);
  assert.deepEqual(workflow.permissions,{contents:'read'});
 });
 
