@@ -52,26 +52,3 @@ jobs:
           compression-level: 0
           include-hidden-files: false
 
-      - name: Install fixed runtime for this approved full-host attempt only
-        if: >-
-          github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_attempt == '1' && github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'
-        run: npm ci --prefix scripts/full-host/runtime --ignore-scripts --no-audit --no-fund
-      - name: Run one approved isolated full-host and restart acceptance
-        if: >-
-          github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_attempt == '1' && github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'
-        env:
-          DSH_A2UI_APPROVED_ATTEMPT: 20261024T110240Z
-        run: node scripts/full-host/run.mjs
-      - name: Preserve only sanitized full-host evidence
-        if: >-
-          always() && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_attempt == '1' && github.event.head_commit.message == 'test: run approved full DSH host acceptance (20261024T110240Z)'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: dsh-a2ui-full-host-receipt-${{ github.sha }}
-          path: |
-            full-host-evidence/receipt.json
-            full-host-evidence/session-a.png
-            full-host-evidence/session-b-restored.png
-          if-no-files-found: warn
-          retention-days: 7
-          include-hidden-files: false
